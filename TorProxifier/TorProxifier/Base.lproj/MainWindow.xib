@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10102" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10102"/>
+        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="TPMainWindowController">
+            <connections>
+                <outlet property="stackView" destination="cxI-Ng-EqZ" id="13b-pH-IyY"/>
+                <outlet property="window" destination="QvC-M9-y7g" id="0Lg-EC-6EL"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="TorProxifier" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g">
+            <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="293" height="180"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <view key="contentView" id="EiT-Mj-1SZ">
+                <rect key="frame" x="0.0" y="0.0" width="293" height="180"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                <subviews>
+                    <stackView distribution="fill" orientation="vertical" alignment="centerX" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cxI-Ng-EqZ">
+                        <rect key="frame" x="0.0" y="0.0" width="293" height="180"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="293" id="Kha-MF-xcj"/>
+                        </constraints>
+                    </stackView>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="cxI-Ng-EqZ" secondAttribute="trailing" id="QmG-mz-VPv"/>
+                    <constraint firstItem="cxI-Ng-EqZ" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="YxQ-8i-xo5"/>
+                    <constraint firstAttribute="bottom" secondItem="cxI-Ng-EqZ" secondAttribute="bottom" id="hoL-Ph-wZo"/>
+                    <constraint firstItem="cxI-Ng-EqZ" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="s6C-eP-yl4"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="296.5" y="356"/>
+        </window>
+    </objects>
+</document>

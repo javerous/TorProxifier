@@ -1,0 +1,591 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E80668B41C6170F3001AEB6D /* TPPanel_Welcome.m in Sources */ = {isa = PBXBuildFile; fileRef = E80668B21C6170F3001AEB6D /* TPPanel_Welcome.m */; };
+		E80668B51C6170F3001AEB6D /* TPPanel_Welcome.xib in Resources */ = {isa = PBXBuildFile; fileRef = E80668B31C6170F3001AEB6D /* TPPanel_Welcome.xib */; };
+		E80668B81C617735001AEB6D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E80668BA1C617735001AEB6D /* Localizable.strings */; };
+		E83308ED1C5AC805007CBF65 /* TPDropZone.m in Sources */ = {isa = PBXBuildFile; fileRef = E83308EC1C5AC805007CBF65 /* TPDropZone.m */; };
+		E84A66AE1C77120800F904FB /* SMAssistant.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = E84A66AB1C77120800F904FB /* SMAssistant.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E84A66AF1C77120800F904FB /* SMFoundation.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = E84A66AC1C77120800F904FB /* SMFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E84A66B01C77120800F904FB /* SMTor.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = E84A66AD1C77120800F904FB /* SMTor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E84A66B11C77121B00F904FB /* SMAssistant.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E84A66AB1C77120800F904FB /* SMAssistant.framework */; };
+		E84A66B21C77121B00F904FB /* SMFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E84A66AC1C77120800F904FB /* SMFoundation.framework */; };
+		E84A66B31C77121B00F904FB /* SMTor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E84A66AD1C77120800F904FB /* SMTor.framework */; };
+		E8A78DE21C5AAD1100D3C999 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A78DE11C5AAD1100D3C999 /* AppDelegate.m */; };
+		E8A78DE51C5AAD1100D3C999 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A78DE41C5AAD1100D3C999 /* main.m */; };
+		E8A78DE71C5AAD1100D3C999 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8A78DE61C5AAD1100D3C999 /* Assets.xcassets */; };
+		E8A78DEA1C5AAD1100D3C999 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E8A78DE81C5AAD1100D3C999 /* MainMenu.xib */; };
+		E8A78E381C5AAF3200D3C999 /* liburlhook.dylib in Copy Injections Libraries */ = {isa = PBXBuildFile; fileRef = E8A78E321C5AAEDB00D3C999 /* liburlhook.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E8A78E391C5AAF3200D3C999 /* libtsocks.dylib in Copy Injections Libraries */ = {isa = PBXBuildFile; fileRef = E8A78E111C5AAE7C00D3C999 /* libtsocks.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E8DFD0621C5E9C81008C64AD /* TPMainWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8DFD0611C5E9C81008C64AD /* TPMainWindowController.m */; };
+		E8DFD0691C5E9CDC008C64AD /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E8DFD0681C5E9CDC008C64AD /* MainWindow.xib */; };
+		E8DFD06C1C5EA22B008C64AD /* ProcessView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E8DFD06B1C5EA22B008C64AD /* ProcessView.xib */; };
+		E8DFD0701C5EA28D008C64AD /* TPProcessView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8DFD06F1C5EA28D008C64AD /* TPProcessView.m */; };
+		E8DFD0741C5EA8EA008C64AD /* TPProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = E8DFD0731C5EA8EA008C64AD /* TPProcess.m */; };
+		E8DFD0771C5EB682008C64AD /* TPProcessManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E8DFD0761C5EB682008C64AD /* TPProcessManager.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E8A78E101C5AAE7C00D3C999 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E8A78E0C1C5AAE7C00D3C999 /* tsocks.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E8A78DFA1C5AAE5B00D3C999;
+			remoteInfo = tsocks;
+		};
+		E8A78E311C5AAEDB00D3C999 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E8A78E2D1C5AAEDB00D3C999 /* urlhook.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E8A78E1B1C5AAEBF00D3C999;
+			remoteInfo = urlhook;
+		};
+		E8A78E331C5AAEF900D3C999 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E8A78E2D1C5AAEDB00D3C999 /* urlhook.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E8A78E1A1C5AAEBF00D3C999;
+			remoteInfo = urlhook;
+		};
+		E8A78E351C5AAEF900D3C999 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E8A78E0C1C5AAE7C00D3C999 /* tsocks.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E8A78DF91C5AAE5B00D3C999;
+			remoteInfo = tsocks;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E8A78E371C5AAF2900D3C999 /* Copy Injections Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				E8A78E381C5AAF3200D3C999 /* liburlhook.dylib in Copy Injections Libraries */,
+				E8A78E391C5AAF3200D3C999 /* libtsocks.dylib in Copy Injections Libraries */,
+			);
+			name = "Copy Injections Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8CD578E1C76A0D100C08AF4 /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				E84A66AE1C77120800F904FB /* SMAssistant.framework in Copy Frameworks */,
+				E84A66AF1C77120800F904FB /* SMFoundation.framework in Copy Frameworks */,
+				E84A66B01C77120800F904FB /* SMTor.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		E80668B11C6170F3001AEB6D /* TPPanel_Welcome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPPanel_Welcome.h; sourceTree = "<group>"; };
+		E80668B21C6170F3001AEB6D /* TPPanel_Welcome.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPPanel_Welcome.m; sourceTree = "<group>"; };
+		E80668B31C6170F3001AEB6D /* TPPanel_Welcome.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TPPanel_Welcome.xib; sourceTree = "<group>"; };
+		E80668B91C617735001AEB6D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		E83308EB1C5AC805007CBF65 /* TPDropZone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPDropZone.h; sourceTree = "<group>"; };
+		E83308EC1C5AC805007CBF65 /* TPDropZone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPDropZone.m; sourceTree = "<group>"; };
+		E84A66AB1C77120800F904FB /* SMAssistant.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SMAssistant.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E84A66AC1C77120800F904FB /* SMFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SMFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E84A66AD1C77120800F904FB /* SMTor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SMTor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8A78DDD1C5AAD1100D3C999 /* TorProxifier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TorProxifier.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8A78DE01C5AAD1100D3C999 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		E8A78DE11C5AAD1100D3C999 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		E8A78DE41C5AAD1100D3C999 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		E8A78DE61C5AAD1100D3C999 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E8A78DE91C5AAD1100D3C999 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		E8A78DEB1C5AAD1100D3C999 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E8A78E0C1C5AAE7C00D3C999 /* tsocks.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tsocks.xcodeproj; path = TorProxifier/libtsocks/tsocks.xcodeproj; sourceTree = "<group>"; };
+		E8A78E2D1C5AAEDB00D3C999 /* urlhook.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = urlhook.xcodeproj; path = TorProxifier/liburlhook/urlhook.xcodeproj; sourceTree = "<group>"; };
+		E8DFD0601C5E9C81008C64AD /* TPMainWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPMainWindowController.h; sourceTree = "<group>"; };
+		E8DFD0611C5E9C81008C64AD /* TPMainWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPMainWindowController.m; sourceTree = "<group>"; };
+		E8DFD0681C5E9CDC008C64AD /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MainWindow.xib; path = Base.lproj/MainWindow.xib; sourceTree = "<group>"; };
+		E8DFD06B1C5EA22B008C64AD /* ProcessView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ProcessView.xib; path = Base.lproj/ProcessView.xib; sourceTree = "<group>"; };
+		E8DFD06E1C5EA28D008C64AD /* TPProcessView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPProcessView.h; sourceTree = "<group>"; };
+		E8DFD06F1C5EA28D008C64AD /* TPProcessView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPProcessView.m; sourceTree = "<group>"; };
+		E8DFD0721C5EA8EA008C64AD /* TPProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPProcess.h; sourceTree = "<group>"; };
+		E8DFD0731C5EA8EA008C64AD /* TPProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPProcess.m; sourceTree = "<group>"; };
+		E8DFD0751C5EB682008C64AD /* TPProcessManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPProcessManager.h; sourceTree = "<group>"; };
+		E8DFD0761C5EB682008C64AD /* TPProcessManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPProcessManager.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E8A78DDA1C5AAD1100D3C999 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E84A66B11C77121B00F904FB /* SMAssistant.framework in Frameworks */,
+				E84A66B21C77121B00F904FB /* SMFoundation.framework in Frameworks */,
+				E84A66B31C77121B00F904FB /* SMTor.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E80668B01C617075001AEB6D /* TPPanels */ = {
+			isa = PBXGroup;
+			children = (
+				E80668B11C6170F3001AEB6D /* TPPanel_Welcome.h */,
+				E80668B21C6170F3001AEB6D /* TPPanel_Welcome.m */,
+				E80668B31C6170F3001AEB6D /* TPPanel_Welcome.xib */,
+			);
+			name = TPPanels;
+			sourceTree = "<group>";
+		};
+		E80668BB1C617759001AEB6D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E8A78DE81C5AAD1100D3C999 /* MainMenu.xib */,
+				E8A78DE61C5AAD1100D3C999 /* Assets.xcassets */,
+				E80668BA1C617735001AEB6D /* Localizable.strings */,
+				E8A78DEB1C5AAD1100D3C999 /* Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		E840D8291C769FC20093ABE3 /* Links */ = {
+			isa = PBXGroup;
+			children = (
+				E84A66AB1C77120800F904FB /* SMAssistant.framework */,
+				E84A66AC1C77120800F904FB /* SMFoundation.framework */,
+				E84A66AD1C77120800F904FB /* SMTor.framework */,
+			);
+			name = Links;
+			sourceTree = "<group>";
+		};
+		E8560CF41C61664400F27998 /* Injections */ = {
+			isa = PBXGroup;
+			children = (
+				E8A78E2D1C5AAEDB00D3C999 /* urlhook.xcodeproj */,
+				E8A78E0C1C5AAE7C00D3C999 /* tsocks.xcodeproj */,
+			);
+			name = Injections;
+			sourceTree = "<group>";
+		};
+		E8A78DD41C5AAD1100D3C999 = {
+			isa = PBXGroup;
+			children = (
+				E8560CF41C61664400F27998 /* Injections */,
+				E8A78DDF1C5AAD1100D3C999 /* TorProxifier */,
+				E840D8291C769FC20093ABE3 /* Links */,
+				E8A78DDE1C5AAD1100D3C999 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E8A78DDE1C5AAD1100D3C999 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E8A78DDD1C5AAD1100D3C999 /* TorProxifier.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E8A78DDF1C5AAD1100D3C999 /* TorProxifier */ = {
+			isa = PBXGroup;
+			children = (
+				E8A78DE01C5AAD1100D3C999 /* AppDelegate.h */,
+				E8A78DE11C5AAD1100D3C999 /* AppDelegate.m */,
+				E8DFD0631C5E9C87008C64AD /* Controllers */,
+				E8DFD0781C5EB690008C64AD /* Managers */,
+				E8DFD0711C5EA8CA008C64AD /* Components */,
+				E8DFD06A1C5E9EF0008C64AD /* Views */,
+				E80668BB1C617759001AEB6D /* Resources */,
+				E8A78DE31C5AAD1100D3C999 /* Supporting Files */,
+			);
+			path = TorProxifier;
+			sourceTree = "<group>";
+		};
+		E8A78DE31C5AAD1100D3C999 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E8A78DE41C5AAD1100D3C999 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E8A78E0D1C5AAE7C00D3C999 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E8A78E111C5AAE7C00D3C999 /* libtsocks.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E8A78E2E1C5AAEDB00D3C999 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E8A78E321C5AAEDB00D3C999 /* liburlhook.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E8C5B3971C60195200C2F74A /* MainWindow */ = {
+			isa = PBXGroup;
+			children = (
+				E8DFD0601C5E9C81008C64AD /* TPMainWindowController.h */,
+				E8DFD0611C5E9C81008C64AD /* TPMainWindowController.m */,
+				E8DFD0681C5E9CDC008C64AD /* MainWindow.xib */,
+			);
+			name = MainWindow;
+			sourceTree = "<group>";
+		};
+		E8DFD0631C5E9C87008C64AD /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				E8C5B3971C60195200C2F74A /* MainWindow */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		E8DFD06A1C5E9EF0008C64AD /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E83308EB1C5AC805007CBF65 /* TPDropZone.h */,
+				E83308EC1C5AC805007CBF65 /* TPDropZone.m */,
+				E8DFD06D1C5EA261008C64AD /* TPProcessView */,
+				E80668B01C617075001AEB6D /* TPPanels */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		E8DFD06D1C5EA261008C64AD /* TPProcessView */ = {
+			isa = PBXGroup;
+			children = (
+				E8DFD06E1C5EA28D008C64AD /* TPProcessView.h */,
+				E8DFD06F1C5EA28D008C64AD /* TPProcessView.m */,
+				E8DFD06B1C5EA22B008C64AD /* ProcessView.xib */,
+			);
+			name = TPProcessView;
+			sourceTree = "<group>";
+		};
+		E8DFD0711C5EA8CA008C64AD /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				E8DFD0721C5EA8EA008C64AD /* TPProcess.h */,
+				E8DFD0731C5EA8EA008C64AD /* TPProcess.m */,
+			);
+			name = Components;
+			sourceTree = "<group>";
+		};
+		E8DFD0781C5EB690008C64AD /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				E8DFD0751C5EB682008C64AD /* TPProcessManager.h */,
+				E8DFD0761C5EB682008C64AD /* TPProcessManager.m */,
+			);
+			name = Managers;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E8A78DDC1C5AAD1100D3C999 /* TorProxifier */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E8A78DEE1C5AAD1100D3C999 /* Build configuration list for PBXNativeTarget "TorProxifier" */;
+			buildPhases = (
+				E8A78DD91C5AAD1100D3C999 /* Sources */,
+				E8A78DDA1C5AAD1100D3C999 /* Frameworks */,
+				E8A78DDB1C5AAD1100D3C999 /* Resources */,
+				E8A78E371C5AAF2900D3C999 /* Copy Injections Libraries */,
+				E8CD578E1C76A0D100C08AF4 /* Copy Frameworks */,
+				E84A66B81C772BA500F904FB /* Set CFBundleVersion */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E8A78E341C5AAEF900D3C999 /* PBXTargetDependency */,
+				E8A78E361C5AAEF900D3C999 /* PBXTargetDependency */,
+			);
+			name = TorProxifier;
+			productName = TorProxifier;
+			productReference = E8A78DDD1C5AAD1100D3C999 /* TorProxifier.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E8A78DD51C5AAD1100D3C999 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "Julien-Pierre Avérous";
+				TargetAttributes = {
+					E8A78DDC1C5AAD1100D3C999 = {
+						CreatedOnToolsVersion = 7.3;
+					};
+				};
+			};
+			buildConfigurationList = E8A78DD81C5AAD1100D3C999 /* Build configuration list for PBXProject "TorProxifier" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E8A78DD41C5AAD1100D3C999;
+			productRefGroup = E8A78DDE1C5AAD1100D3C999 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E8A78E0D1C5AAE7C00D3C999 /* Products */;
+					ProjectRef = E8A78E0C1C5AAE7C00D3C999 /* tsocks.xcodeproj */;
+				},
+				{
+					ProductGroup = E8A78E2E1C5AAEDB00D3C999 /* Products */;
+					ProjectRef = E8A78E2D1C5AAEDB00D3C999 /* urlhook.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				E8A78DDC1C5AAD1100D3C999 /* TorProxifier */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		E8A78E111C5AAE7C00D3C999 /* libtsocks.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libtsocks.dylib;
+			remoteRef = E8A78E101C5AAE7C00D3C999 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E8A78E321C5AAEDB00D3C999 /* liburlhook.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = liburlhook.dylib;
+			remoteRef = E8A78E311C5AAEDB00D3C999 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E8A78DDB1C5AAD1100D3C999 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8DFD06C1C5EA22B008C64AD /* ProcessView.xib in Resources */,
+				E80668B81C617735001AEB6D /* Localizable.strings in Resources */,
+				E8A78DE71C5AAD1100D3C999 /* Assets.xcassets in Resources */,
+				E80668B51C6170F3001AEB6D /* TPPanel_Welcome.xib in Resources */,
+				E8A78DEA1C5AAD1100D3C999 /* MainMenu.xib in Resources */,
+				E8DFD0691C5E9CDC008C64AD /* MainWindow.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E84A66B81C772BA500F904FB /* Set CFBundleVersion */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Set CFBundleVersion";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "COMMIT_HASH=$( cd \"${PROJECT_DIR}\";  git rev-parse --short HEAD 2>/dev/null )\n\nif [ $? -ne 0 ]; then\n    COMMIT_HASH=$( cat \"${PROJECT_DIR}/git_hash.txt\" 2>/dev/null )\n\n    if [ $? -ne 0 ]; then\n        COMMIT_HASH=\"detached\"\n    fi\nfi\n\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion ${COMMIT_HASH}\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\nexit 0\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E8A78DD91C5AAD1100D3C999 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8DFD0621C5E9C81008C64AD /* TPMainWindowController.m in Sources */,
+				E8DFD0741C5EA8EA008C64AD /* TPProcess.m in Sources */,
+				E83308ED1C5AC805007CBF65 /* TPDropZone.m in Sources */,
+				E80668B41C6170F3001AEB6D /* TPPanel_Welcome.m in Sources */,
+				E8DFD0701C5EA28D008C64AD /* TPProcessView.m in Sources */,
+				E8A78DE51C5AAD1100D3C999 /* main.m in Sources */,
+				E8A78DE21C5AAD1100D3C999 /* AppDelegate.m in Sources */,
+				E8DFD0771C5EB682008C64AD /* TPProcessManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E8A78E341C5AAEF900D3C999 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = urlhook;
+			targetProxy = E8A78E331C5AAEF900D3C999 /* PBXContainerItemProxy */;
+		};
+		E8A78E361C5AAEF900D3C999 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = tsocks;
+			targetProxy = E8A78E351C5AAEF900D3C999 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		E80668BA1C617735001AEB6D /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E80668B91C617735001AEB6D /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		E8A78DE81C5AAD1100D3C999 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E8A78DE91C5AAD1100D3C999 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		E8A78DEC1C5AAD1100D3C999 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NULLABLE_TO_NONNULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		E8A78DED1C5AAD1100D3C999 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NULLABLE_TO_NONNULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		E8A78DEF1C5AAD1100D3C999 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = TorProxifier/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sourcemac.TorProxifier;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E8A78DF01C5AAD1100D3C999 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = TorProxifier/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sourcemac.TorProxifier;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E8A78DD81C5AAD1100D3C999 /* Build configuration list for PBXProject "TorProxifier" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8A78DEC1C5AAD1100D3C999 /* Debug */,
+				E8A78DED1C5AAD1100D3C999 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E8A78DEE1C5AAD1100D3C999 /* Build configuration list for PBXNativeTarget "TorProxifier" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8A78DEF1C5AAD1100D3C999 /* Debug */,
+				E8A78DF01C5AAD1100D3C999 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E8A78DD51C5AAD1100D3C999 /* Project object */;
+}
