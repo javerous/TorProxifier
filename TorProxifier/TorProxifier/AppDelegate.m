@@ -255,7 +255,7 @@ static BOOL is_port_available(uint16_t port);
 			return;
 		}
 		
-		[_torManager checkForUpdateWithCompletionHandler:^(SMInfo * _Nonnull updateInfo) {
+		[_torManager checkForUpdateWithInfoHandler:^(SMInfo * _Nonnull updateInfo) {
 			
 			// > Handle update.
 			if (updateInfo.kind == SMInfoInfo && [updateInfo.domain isEqualToString:SMTorManagerInfoCheckUpdateDomain] && updateInfo.code == SMTorManagerEventCheckUpdateAvailable)
@@ -264,7 +264,7 @@ static BOOL is_port_available(uint16_t port);
 				NSString		*oldVersion = context[@"old_version"];
 				NSString		*newVersion = context[@"new_version"];
 				
-				[[SMTorUpdateWindowController sharedController] handleUpdateFromVersion:oldVersion toVersion:newVersion torManager:_torManager logHandler:^(SMInfo * _Nonnull info) {
+				[[SMTorUpdateWindowController sharedController] handleUpdateWithTorManager:_torManager oldVersion:oldVersion newVersion:newVersion infoHandler:^(SMInfo * _Nonnull info) {
 #if defined(DEBUG) && DEBUG
 					NSLog(@"Update: %@", [info renderComplete]);
 #endif
