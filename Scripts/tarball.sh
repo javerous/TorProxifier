@@ -9,6 +9,7 @@ pushd "$base" > /dev/null
 
 # Build excludes list
 cat > Scripts/exclude <<EOF
+./Scripts/exclude
 TorProxifier.tgz
 xcuserdata
 .DS_Store

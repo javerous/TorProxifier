@@ -1,17 +1,20 @@
 {
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "90A9F36234C4CA39B2587C45DFB059A6E84873F6",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
 
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
-    "756D6A6E9ABC242A5612C2C12C4467564F55DE1B" : 0,
+    "C72EAD2DB71AA579DD81C848C61935E78ADEC157" : 0,
+    "90A9F36234C4CA39B2587C45DFB059A6E84873F6" : 0,
     "0BB4D438F47EB92D7CC2A9BCFFCE5033357F65C6" : 0,
-    "C72EAD2DB71AA579DD81C848C61935E78ADEC157" : 0
+    "756D6A6E9ABC242A5612C2C12C4467564F55DE1B" : 0
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "F77DC8E9-5F04-4EC5-BFA4-66F7B158E50D",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
-    "756D6A6E9ABC242A5612C2C12C4467564F55DE1B" : "TorProxifier\/Externals\/SMAssistant\/",
+    "C72EAD2DB71AA579DD81C848C61935E78ADEC157" : "TorProxifier\/Externals\/SMFoundation\/",
+    "90A9F36234C4CA39B2587C45DFB059A6E84873F6" : "master\/",
     "0BB4D438F47EB92D7CC2A9BCFFCE5033357F65C6" : "TorProxifier\/Externals\/SMTor\/",
-    "C72EAD2DB71AA579DD81C848C61935E78ADEC157" : "TorProxifier\/Externals\/SMFoundation\/"
+    "756D6A6E9ABC242A5612C2C12C4467564F55DE1B" : "TorProxifier\/Externals\/SMAssistant\/"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "TorProxifier",
   "DVTSourceControlWorkspaceBlueprintVersion" : 204,
@@ -26,6 +29,11 @@
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:javerous\/framework-assistant.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "756D6A6E9ABC242A5612C2C12C4467564F55DE1B"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:javerous\/TorProxifier.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "90A9F36234C4CA39B2587C45DFB059A6E84873F6"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:javerous\/framework-foundation.git",
