@@ -77,7 +77,7 @@ echo '[+] Copy sources to temporary DMG.'
 
 /bin/cp -R "${base}/Externals" "${volume_path}/Externals"
 /bin/cp -R "${base}/TorProxifier" "${volume_path}/TorProxifier"
-/bin/cp -R "${base}/Workspace.xcworkspace" "${volume_path}/Workspace.xcworkspace"
+/bin/cp -R "${base}/TorProxifier.xcworkspace" "${volume_path}/TorProxifier.xcworkspace"
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't copy sources."
@@ -103,7 +103,7 @@ echo '[+] Compile sources.'
 
 cd "${volume_path}"
 
-xcodebuild archive -workspace 'Workspace.xcworkspace' -scheme 'TorProxifier' -archivePath "${volume_path}/torproxifier.xcarchive" 1> "${volume_path}/build.txt" 2> "${volume_path}/build_err.txt"
+xcodebuild archive -workspace 'TorProxifier.xcworkspace' -scheme 'TorProxifier' -archivePath "${volume_path}/torproxifier.xcarchive" 1> "${volume_path}/build.txt" 2> "${volume_path}/build_err.txt"
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't build sources."
