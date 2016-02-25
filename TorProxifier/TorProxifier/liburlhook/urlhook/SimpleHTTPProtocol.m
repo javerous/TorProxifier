@@ -20,22 +20,9 @@
  *
  */
 
-#import <curl/curl.h>
-
 #import "SimpleHTTPProtocol.h"
 
-
-
-/*
-** Macro
-*/
-#pragma mark - Macro
-
-#if defined(DEBUG) && DEBUG
-#	define DebLog(Format, ...) NSLog(@Format, ## __VA_ARGS__)
-#else
-#	define DebLog(Format, ...)
-#endif
+#import "TPControlHelper.h"
 
 
 
@@ -55,21 +42,7 @@ static size_t header_callback(char *buffer, size_t size, size_t nitems, void *us
 #pragma mark SimpleHTTPProtocol - Private
 
 @interface SimpleHTTPProtocol () <NSStreamDelegate>
-{
-	dispatch_queue_t	_localQueue;
-	
-	CURL				*_curl;
-	struct curl_slist	*_chunk;
-	
-	BOOL				_canceled;
-	
-	BOOL				_firstHeaderHandled;
-	
-	NSString			*_httpVersion;
-	NSUInteger			_httpCode;
-	NSMutableDictionary *_headers;
-	BOOL				_headerHandled;
-}
+
 
 @end
 
@@ -81,7 +54,6 @@ static size_t header_callback(char *buffer, size_t size, size_t nitems, void *us
 #pragma mark SimpleHTTPProtocol
 
 @implementation SimpleHTTPProtocol
-
 
 /*
 ** SimpleHTTPProtocol - NSObject
@@ -164,12 +136,12 @@ static size_t header_callback(char *buffer, size_t size, size_t nitems, void *us
 			curl_easy_setopt(_curl, CURLOPT_PUT, 1L);
 		
 		// Proxy.
-		char *proxy = getenv("URL_PROTOCOL_PROXY");
+		char buffer[1024] = { 0 };
 		
-		if (proxy)
+		if (tpcontrol_get_url_config(buffer))
 		{
-			DebLog("Use proxy '%s'", proxy);
-			curl_easy_setopt(_curl, CURLOPT_PROXY, proxy);
+			TPLogDebug(@"Use proxy '%s'", buffer);
+			curl_easy_setopt(_curl, CURLOPT_PROXY, buffer);
 			curl_easy_setopt(_curl, CURLOPT_NOPROXY, "localhost,127.0.0.0"); // stupid: no-proxy is not based on IP & IP range, but on hostname...
 		}
 		
@@ -221,14 +193,14 @@ static size_t header_callback(char *buffer, size_t size, size_t nitems, void *us
 
 - (void)startLoading
 {
-	DebLog("startLoading: request = '%@'", self.request.URL);
+	TPLogDebug("startLoading: request = '%@'", self.request.URL);
 	
 	[NSThread detachNewThreadSelector:@selector(curlThread:) toTarget:self withObject:nil];
 }
 
 - (void)stopLoading
 {
-	DebLog("stopLoading: request = %@", self.request.URL);
+	TPLogDebug("stopLoading: request = %@", self.request.URL);
 
 	_canceled = YES;
 }

@@ -8,6 +8,8 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TPPanel_Welcome">
             <connections>
+                <outlet property="checkTor" destination="bT9-yt-UpT" id="5sc-P0-T2K"/>
+                <outlet property="checkTorButton" destination="bT9-yt-UpT" id="ynU-3Q-GJk"/>
                 <outlet property="hostField" destination="yN3-2K-cdC" id="TTz-ji-Np1"/>
                 <outlet property="hostTitle" destination="We1-tK-KAJ" id="C7x-6w-raH"/>
                 <outlet property="matrixView" destination="bE8-7q-9dZ" id="Lgn-90-Dek"/>
@@ -30,7 +32,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" preferredMaxLayoutWidth="380" translatesAutoresizingMaskIntoConstraints="NO" id="bNH-9W-rIi">
+                <textField verticalHuggingPriority="750" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bNH-9W-rIi">
                     <rect key="frame" x="18" y="254" width="384" height="28"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="n9k-Fq-ggy">
                         <font key="font" metaFont="smallSystem"/>
@@ -152,14 +154,35 @@
                         <real value="3.4028234663852886e+38"/>
                     </customSpacing>
                 </stackView>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="bT9-yt-UpT">
+                    <rect key="frame" x="43" y="80" width="140" height="18"/>
+                    <buttonCell key="cell" type="check" title="Check Tor proxying" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="VLZ-Sy-OMd">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                </button>
+                <textField verticalHuggingPriority="750" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Csb-nJ-EWn">
+                    <rect key="frame" x="62" y="32" width="340" height="42"/>
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="65w-ae-tGC">
+                        <font key="font" metaFont="smallSystem"/>
+                        <string key="title">This option activate Tor checking on proxyied processes before they are actually executed. This let you be sure that all network mechanisms are indeed proxyied.</string>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
             </subviews>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="bNH-9W-rIi" secondAttribute="trailing" constant="20" symbolic="YES" id="0ua-2v-FgO"/>
                 <constraint firstItem="bNH-9W-rIi" firstAttribute="top" secondItem="NvY-4I-MsO" secondAttribute="bottom" constant="8" symbolic="YES" id="1V6-Pb-GWc"/>
                 <constraint firstItem="NvY-4I-MsO" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="20" symbolic="YES" id="Ape-H8-e7t"/>
+                <constraint firstAttribute="trailing" secondItem="Csb-nJ-EWn" secondAttribute="trailing" constant="20" symbolic="YES" id="Bat-mh-uxI"/>
                 <constraint firstItem="2jH-Le-Jhv" firstAttribute="top" secondItem="bE8-7q-9dZ" secondAttribute="bottom" constant="8" symbolic="YES" id="EBI-fS-cmd"/>
+                <constraint firstItem="Csb-nJ-EWn" firstAttribute="leading" secondItem="bT9-yt-UpT" secondAttribute="leading" constant="19" id="R0U-of-zAZ"/>
                 <constraint firstItem="bE8-7q-9dZ" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="45" id="V2t-Jf-vNW"/>
+                <constraint firstItem="bT9-yt-UpT" firstAttribute="leading" secondItem="bE8-7q-9dZ" secondAttribute="leading" id="Y4M-jD-lts"/>
+                <constraint firstItem="bT9-yt-UpT" firstAttribute="top" secondItem="2jH-Le-Jhv" secondAttribute="bottom" constant="25" id="Yhn-YJ-8yq"/>
                 <constraint firstItem="NvY-4I-MsO" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="20" symbolic="YES" id="ch7-3d-RA9"/>
+                <constraint firstItem="Csb-nJ-EWn" firstAttribute="top" secondItem="bT9-yt-UpT" secondAttribute="bottom" constant="8" symbolic="YES" id="fIP-Gb-Chw"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="bE8-7q-9dZ" secondAttribute="trailing" constant="20" symbolic="YES" id="gS5-GI-KSj"/>
                 <constraint firstItem="2jH-Le-Jhv" firstAttribute="leading" secondItem="bE8-7q-9dZ" secondAttribute="leading" constant="35" id="ms0-Er-ZDf"/>
                 <constraint firstItem="bNH-9W-rIi" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="20" symbolic="YES" id="ofb-up-R3I"/>

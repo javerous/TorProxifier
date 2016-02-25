@@ -71,18 +71,6 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TPMainWindowController - Instance
 
-+ (instancetype)sharedController
-{
-	static dispatch_once_t			onceToken;
-	static TPMainWindowController	*shr;
-	
-	dispatch_once(&onceToken, ^{
-		shr = [[TPMainWindowController alloc] init];
-	});
-	
-	return shr;
-}
-
 - (id)init
 {
 	self = [super initWithWindowNibName:@"MainWindow"];
@@ -93,39 +81,18 @@ NS_ASSUME_NONNULL_BEGIN
 		_changes = [[NSMutableArray alloc] init];
 		_processView = [[NSMutableArray alloc] init];
 		
-
+		// Process manager.
+		__weak TPMainWindowController *weakSelf = self;
+		
+		_processManager = [[TPProcessManager alloc] init];
+		
+		_processManager.processesChangeHandler = ^(NSArray *processes, TPProcessChange change) {
+			[weakSelf addChange:@{ @"processes" : processes, @"change" : @(change) }];
+		};
 	}
 	
 	return self;
 }
-
-
-
-/*
-** TPMainWindowController - Life
-*/
-#pragma mark - TPMainWindowController - Life
-
-- (void)showWithSocksHost:(NSString *)host socksPort:(uint16_t)port
-{
-	NSAssert(host, @"host is nil");
-
-	// Handle socks configuration.
-	_socksHost = host;
-	_socksPort = port;
-	
-	// Process manager.
-	__weak TPMainWindowController *weakSelf = self;
-	
-	_processManager = [[TPProcessManager alloc] initWithSocksHost:_socksHost socksPort:_socksPort];
-	
-	_processManager.processesChangeHandler = ^(NSArray *processes, TPProcessChange change) {
-		[weakSelf addChange:@{ @"processes" : processes, @"change" : @(change) }];
-	};
-	
-	[self showWindow:nil];
-}
-
 
 
 /*
@@ -135,6 +102,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)windowDidLoad
 {
+	[super windowDidLoad];
+	
 	// Place Window.
 	[self.window center];
 	
@@ -150,11 +119,35 @@ NS_ASSUME_NONNULL_BEGIN
 		[weakPM launchProcessesWithPaths:files];
 	};
 	
-	
-	
 	// Add to drop zone.
 	[self.stackView insertView:_dropZone atIndex:0 inGravity:NSStackViewGravityBottom];
 }
+
+
+
+/*
+** TPMainWindowController - Configuration
+*/
+#pragma mark - TPMainWindowController - Configuration
+
+- (void)setConfiguration:(TPConfiguration *)configuration
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		_processManager.configuration = configuration;
+	});
+}
+
+- (TPConfiguration *)configuration
+{
+	__block TPConfiguration *configuration;
+	
+	dispatch_sync(dispatch_get_main_queue(), ^{
+		configuration = _processManager.configuration;
+	});
+	
+	return configuration;
+}
+
 
 
 /*
@@ -195,92 +188,88 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_handleChange:(NSDictionary *)changeDescriptor
 {
-	dispatch_async(dispatch_get_main_queue(), ^{
-		
-		_isChanging = YES;
-		
-		NSArray			*processes = changeDescriptor[@"processes"];
-		TPProcessChange	change = (TPProcessChange)[changeDescriptor[@"change"] intValue];
-		
-		switch (change)
+	NSArray			*processes = changeDescriptor[@"processes"];
+	TPProcessChange	change = (TPProcessChange)[changeDescriptor[@"change"] intValue];
+	
+	_isChanging = YES;
+
+	switch (change)
+	{
+		case TPProcessChangeCreated:
 		{
-			// Handle change.
-			case TPProcessChangeCreated:
+			NSMutableArray *views = [[NSMutableArray alloc] init];
+			
+			// > Add views.
+			for (TPProcess *process in processes)
 			{
-				NSMutableArray *views = [[NSMutableArray alloc] init];
+				TPProcessView	*processView = [TPProcessView processViewWithProcess:process];
+				NSView			*view = processView.view;
 				
-				// > Add views.
-				for (TPProcess *process in processes)
-				{
-					TPProcessView	*processView = [TPProcessView processViewWithProcess:process];
-					NSView			*view = processView.view;
-					
-					[view setFrame:_dropZone.frame];
-					[view setAlphaValue:0.0];
-					
-					[self.stackView insertView:view atIndex:0 inGravity:NSStackViewGravityTop];
-					
-					[views addObject:view];
-					[_processView addObject:processView];
-				}
-
-				// > Animate adds.
-				[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-
-					context.duration = 0.4;
-					context.allowsImplicitAnimation = YES;
-
-					for (NSView *view in views)
-						view.alphaValue = 1.0;
-					
-					[self.window layoutIfNeeded];
-				}
-				completionHandler:^{
-					[self nextChange];
-				}];
+				[view setFrame:_dropZone.frame];
+				[view setAlphaValue:0.0];
 				
-				return;
+				[self.stackView insertView:view atIndex:0 inGravity:NSStackViewGravityTop];
+				
+				[views addObject:view];
+				[_processView addObject:processView];
 			}
 			
-			case TPProcessChangeRemoved:
-			{
-				// > Remove views.
-				NSMutableArray *processViews = [[NSMutableArray alloc] init];
+			// > Animate adds.
+			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 				
-				for (TPProcess *process in processes)
-				{
-					[_processView enumerateObjectsUsingBlock:^(TPProcessView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-						
-						if (obj.process != process)
-							return;
-						
-						[processViews addObject:obj];
-					}];
-				}
+				context.duration = 0.4;
+				context.allowsImplicitAnimation = YES;
 				
-				// > Animate removes.
-				[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-					
-					context.allowsImplicitAnimation = YES;
-					
-					for (TPProcessView *processView in processViews)
-						[self.stackView removeView:processView.view];
-					
-					[self.window layoutIfNeeded];
-				}
-				completionHandler:^{
-					
-					dispatch_async(dispatch_get_main_queue(), ^{
-						[_processView removeObjectsInArray:processViews];
-					});
-					
-					[self nextChange];
-				}];
+				for (NSView *view in views)
+					view.alphaValue = 1.0;
 				
-				return;
+				[self.window layoutIfNeeded];
 			}
+								completionHandler:^{
+									[self nextChange];
+								}];
+			
+			return;
 		}
-	});
+			
+		case TPProcessChangeRemoved:
+		{
+			// > Remove views.
+			NSMutableArray *processViews = [[NSMutableArray alloc] init];
+			
+			for (TPProcess *process in processes)
+			{
+				[_processView enumerateObjectsUsingBlock:^(TPProcessView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+					
+					if (obj.process != process)
+						return;
+					
+					[processViews addObject:obj];
+				}];
+			}
+			
+			// > Animate removes.
+			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+				
+				context.allowsImplicitAnimation = YES;
+				
+				for (TPProcessView *processView in processViews)
+					[self.stackView removeView:processView.view];
+				
+				[self.window layoutIfNeeded];
+			}
+								completionHandler:^{
+									
+									dispatch_async(dispatch_get_main_queue(), ^{
+										[_processView removeObjectsInArray:processViews];
+									});
+									
+									[self nextChange];
+								}];
+			
+			return;
+		}
+	}
 }
 
 @end

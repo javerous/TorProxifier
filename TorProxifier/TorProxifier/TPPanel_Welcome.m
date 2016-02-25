@@ -22,6 +22,8 @@
 
 #import "TPPanel_Welcome.h"
 
+#import "TPConfiguration.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -42,6 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	IBOutlet NSTextField *portTitle;
 	IBOutlet NSTextField *portField;
+	
+	IBOutlet NSButton *checkTor;
 }
 
 
@@ -71,13 +75,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable id)content
 {
+	TPConfiguration *configuration = [[TPConfiguration alloc] init];
+	
 	NSCell		*obj = [matrixView selectedCell];
 	NSInteger	tag = [obj tag];
 	
 	if (tag == 1)
-		return @{ @"bundled" : @YES };
+		configuration.bundled = YES;
 	else
-		return @{ @"bundled" : @NO, @"host" : hostField.stringValue, @"port" : @(portField.stringValue.integerValue) };
+	{
+		configuration.bundled = NO;
+		configuration.socksHost = hostField.stringValue;
+		configuration.socksPort = portField.stringValue.integerValue;
+	}
+	
+	configuration.checkTor = (checkTor.state == NSOnState);
+	
+	return configuration;
 }
 
 - (void)showPanel

@@ -60,6 +60,8 @@ char *progname = "libtsocks";         	   /* Name used in err msgs    */
 
 
 // --JP/
+#include "TPControlHelper.h"
+
 static void __attribute((constructor)) tp_constructor()
 {
 	fprintf(stderr, "****** tsocks loaded ******\n");
@@ -143,7 +145,7 @@ int p_poll(POLL_SIGNATURE);
 int p_close(CLOSE_SIGNATURE);
 int p_getpeername(GETPEERNAME_SIGNATURE);
 
-// From OS X Internal
+// From 'OS X Internal'
 typedef struct interpose_s {
 	void *new_func;
 	void *origin_func;
@@ -273,6 +275,19 @@ static int get_config () {
 			   liner = line_enumerator_file(CONF_FILE);
 	   }
    }
+#else
+	char buffer[1024] = { 0 };
+	
+	tpcontrol_get_tsocks_config(buffer);
+
+#if defined(DEBUG) && DEBUG
+	fprintf(stderr, "[tsocks] Use tsocks config: %s\n", buffer);
+#endif
+	liner = line_enumerator_buffer(buffer);
+	
+	(void)conffile;
+	(void)confdata;
+
 #endif
 	
    read_config(liner, config);

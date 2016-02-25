@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10102" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10109" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10102"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10109"/>
         <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <objects>
@@ -9,13 +10,16 @@
             <connections>
                 <outlet property="iconView" destination="WVt-8d-LbX" id="q8M-xh-wNJ"/>
                 <outlet property="nameField" destination="dXB-xd-zEb" id="sgk-ni-WQc"/>
-                <outlet property="terminateButton" destination="Zbx-LU-iPl" id="CNC-Ji-dfr"/>
+                <outlet property="statusButton" destination="YpD-Yr-1wC" id="W3E-xG-nKb"/>
+                <outlet property="statusField" destination="bPa-CI-kFO" id="so2-SC-Llm"/>
+                <outlet property="statusView" destination="ay2-3l-XAC" id="IxN-VV-4RK"/>
+                <outlet property="terminateButton" destination="Zbx-LU-iPl" id="Uem-sD-ne0"/>
                 <outlet property="view" destination="c22-O7-iKe" id="P78-y4-GIe"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c22-O7-iKe" customClass="TPProcessViewBackground">
+        <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c22-O7-iKe" userLabel="Process View" customClass="TPProcessViewBackground">
             <rect key="frame" x="0.0" y="0.0" width="293" height="25"/>
             <subviews>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="WVt-8d-LbX">
@@ -34,16 +38,30 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Pnx-vI-U0Y">
+                <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="3" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Pnx-vI-U0Y">
                     <rect key="frame" x="274" y="6" width="14" height="14"/>
                     <subviews>
-                        <button translatesAutoresizingMaskIntoConstraints="NO" id="Zbx-LU-iPl">
+                        <button hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YpD-Yr-1wC" userLabel="Status Button">
+                            <rect key="frame" x="0.0" y="0.0" width="14" height="14"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="14" id="aep-U6-Xrh"/>
+                                <constraint firstAttribute="width" constant="14" id="bN8-ZI-5pe"/>
+                            </constraints>
+                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="progress_0" imagePosition="only" alignment="center" imageScaling="axesIndependently" inset="2" id="mdc-Cl-tSE">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="doStatus:" target="-2" id="mAR-Wi-0jQ"/>
+                            </connections>
+                        </button>
+                        <button translatesAutoresizingMaskIntoConstraints="NO" id="Zbx-LU-iPl" userLabel="Terminate Button">
                             <rect key="frame" x="0.0" y="0.0" width="14" height="14"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="14" id="JSV-A5-VMq"/>
                                 <constraint firstAttribute="height" constant="14" id="w6W-mx-FBp"/>
                             </constraints>
-                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSStopProgressFreestandingTemplate" imagePosition="only" alignment="center" inset="2" id="Ogd-nK-jTq">
+                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSStopProgressFreestandingTemplate" imagePosition="only" alignment="center" imageScaling="axesIndependently" inset="2" id="Ogd-nK-jTq">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
@@ -54,27 +72,55 @@
                     </subviews>
                     <visibilityPriorities>
                         <integer value="1000"/>
+                        <integer value="1000"/>
                     </visibilityPriorities>
                     <customSpacing>
+                        <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
                     </customSpacing>
                 </stackView>
             </subviews>
             <constraints>
                 <constraint firstItem="Pnx-vI-U0Y" firstAttribute="centerY" secondItem="c22-O7-iKe" secondAttribute="centerY" id="41f-sY-yFa"/>
+                <constraint firstItem="Pnx-vI-U0Y" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="dXB-xd-zEb" secondAttribute="trailing" constant="8" symbolic="YES" id="O9h-No-eSE"/>
                 <constraint firstItem="WVt-8d-LbX" firstAttribute="centerY" secondItem="c22-O7-iKe" secondAttribute="centerY" id="PY1-ij-ABD"/>
                 <constraint firstItem="dXB-xd-zEb" firstAttribute="centerY" secondItem="c22-O7-iKe" secondAttribute="centerY" id="RaF-HM-U6I"/>
                 <constraint firstItem="dXB-xd-zEb" firstAttribute="leading" secondItem="WVt-8d-LbX" secondAttribute="trailing" constant="8" symbolic="YES" id="ahe-qt-avc"/>
-                <constraint firstItem="Zbx-LU-iPl" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="dXB-xd-zEb" secondAttribute="trailing" constant="5" id="bHR-R6-NR8"/>
                 <constraint firstAttribute="height" constant="25" id="euV-Hz-TYT"/>
                 <constraint firstItem="WVt-8d-LbX" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="5" id="qn8-F9-bBh"/>
                 <constraint firstAttribute="trailing" secondItem="Pnx-vI-U0Y" secondAttribute="trailing" constant="5" id="vqR-o1-mGs"/>
             </constraints>
             <point key="canvasLocation" x="378.5" y="430.5"/>
         </customView>
+        <customView id="ay2-3l-XAC" userLabel="Status View">
+            <rect key="frame" x="0.0" y="0.0" width="236" height="118"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bPa-CI-kFO" userLabel="StatusField">
+                    <rect key="frame" x="6" y="8" width="224" height="102"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="220" id="7Js-WY-bjX"/>
+                    </constraints>
+                    <textFieldCell key="cell" selectable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" id="l8a-lF-dYC" userLabel="Field Cell">
+                        <font key="font" metaFont="system"/>
+                        <string key="title">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec purus lectus, vehicula nec tellus id, aliquam laoreet ligula. Cras quis justo sit amet arcu dignissim sodales.</string>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+            <constraints>
+                <constraint firstItem="bPa-CI-kFO" firstAttribute="top" secondItem="ay2-3l-XAC" secondAttribute="top" constant="8" id="AGn-kO-zuv"/>
+                <constraint firstAttribute="bottom" secondItem="bPa-CI-kFO" secondAttribute="bottom" constant="8" id="caz-5E-HfD"/>
+                <constraint firstAttribute="trailing" secondItem="bPa-CI-kFO" secondAttribute="trailing" constant="8" id="n42-68-NSi"/>
+                <constraint firstItem="bPa-CI-kFO" firstAttribute="leading" secondItem="ay2-3l-XAC" secondAttribute="leading" constant="8" id="n4Z-7S-K5a"/>
+            </constraints>
+            <point key="canvasLocation" x="346" y="277.5"/>
+        </customView>
     </objects>
     <resources>
         <image name="NSApplicationIcon" width="128" height="128"/>
         <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
+        <image name="progress_0" width="14" height="14"/>
     </resources>
 </document>

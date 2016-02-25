@@ -74,9 +74,7 @@ NSArray *replaced_NSURLSessionConfiguration_defaultProtocolClasses(Class self, S
 		classes = [hooked copy];
 	}
 	
-#if defined(DEBUG) && DEBUG
-	NSLog(@"Default protocols: %@", classes);
-#endif
+	TPLogDebug(@"Default protocols: %@", classes);
 	
 	return classes;
 }
@@ -97,7 +95,7 @@ NSArray *replaced_NSURLSessionConfiguration_defaultProtocolClasses(Class self, S
 + (void)load
 {
 	fprintf(stderr, "****** httphook loaded ******\n");
-
+	
 	// Redirect NSURL* HTTP requests.
 	[SimpleHTTPProtocol registerClass];
 	

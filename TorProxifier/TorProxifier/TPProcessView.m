@@ -38,8 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong) IBOutlet NSImageView *iconView;
 @property (strong) IBOutlet NSTextField *nameField;
 
+@property (strong) IBOutlet NSButton *statusButton;
 @property (strong) IBOutlet NSButton *terminateButton;
 
+@property (strong) IBOutlet NSView *statusView;
+@property (strong) IBOutlet NSTextField *statusField;
 
 @end
 
@@ -71,9 +74,67 @@ NS_ASSUME_NONNULL_BEGIN
 		NSAssert(process, @"process is nil");
 		
 		_process = process;
+		
+		// Handle launch progress updates.
+		__weak TPProcessView *weakSelf = self;
+		
+		_process.launchProgressHandler = ^(TPProcess *process, double progress) {
+			[weakSelf handleLaunchProgress:progress];
+		};
+		
+		_process.launchErrorHandler = ^(TPProcess *process, NSString *error) {
+			[weakSelf handleLaunchError:error];
+		};
 	}
 	
 	return self;
+}
+
+
+
+/*
+** TPProcessView - Helpers
+*/
+#pragma mark - TPProcessView - Helpers
+
+- (void)handleLaunchProgress:(double)progress
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		if (_statusButton.hidden)
+			_statusButton.hidden = NO;
+		
+		if (progress < 1)
+		{
+			if (progress == 0.0)
+				_statusButton.image = [NSImage imageNamed:@"progress_0"];
+			else if (progress <= 0.25)
+				_statusButton.image = [NSImage imageNamed:@"progress_1"];
+			else if (progress <= 0.50)
+				_statusButton.image = [NSImage imageNamed:@"progress_2"];
+			else if (progress <= 0.75)
+				_statusButton.image = [NSImage imageNamed:@"progress_3"];
+			
+			_statusField.stringValue = [NSString stringWithFormat:NSLocalizedString(@"process_launching", @""), (NSUInteger)(progress * 100.0)];
+		}
+		else
+		{
+			_statusButton.image = [NSImage imageNamed:@"progress_4"];
+			_statusField.stringValue = [NSString stringWithFormat:NSLocalizedString(@"process_launched", @""), (NSUInteger)(progress * 100.0)];
+		}
+	});
+}
+
+- (void)handleLaunchError:(NSString *)error
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		if (_statusButton.hidden)
+			_statusButton.hidden = NO;
+		
+		_statusField.stringValue = error;
+		_statusButton.image = [NSImage imageNamed:@"error"];
+	});
 }
 
 
@@ -89,6 +150,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 	_iconView.image = _process.icon;
 	_nameField.stringValue = _process.name;
+	
+	_statusField.stringValue = NSLocalizedString(@"process_no_status", @"");
+
+	_statusButton.hidden = YES; // XIB setting seem ignored. Bug ?
 }
 
 
@@ -97,6 +162,19 @@ NS_ASSUME_NONNULL_BEGIN
 ** TPProcessView - IBAction
 */
 #pragma mark - TPProcessView - IBAction
+
+- (IBAction)doStatus:(id)sender
+{
+	NSPopover *popover = [[NSPopover alloc] init];
+	NSViewController *viewController = [[NSViewController alloc] init];
+	
+	viewController.view = _statusView;
+	
+	popover.contentViewController = viewController;
+	popover.behavior = NSPopoverBehaviorTransient;
+
+	[popover showRelativeToRect:NSZeroRect ofView:_statusButton preferredEdge:NSRectEdgeMaxY];
+}
 
 - (IBAction)doTerminate:(id)sender
 {

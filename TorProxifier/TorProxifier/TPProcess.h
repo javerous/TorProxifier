@@ -34,19 +34,35 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TPProcess : NSObject
 
 // -- Instance --
-- (instancetype)initWithPath:(NSString *)path socksHost:(nullable NSString *)socksHost socksPort:(uint16_t)socksPort;
+- (instancetype)initWithPath:(NSString *)path;
 
 // -- Life --
-- (void)launch;
+- (void)launchWithInjectedLibraries:(nullable NSArray *)libraries;
 - (void)terminate;
 
+// -- Steps --
+- (void)launchStepping;
+
 // -- Properties --
-@property (strong, readonly) NSString	*path;
+// Process.
+@property (readonly) NSString	*path;
 
-@property (strong, readonly) NSString	*name;
-@property (strong, readonly) NSImage	*icon;
+@property (readonly) NSString	*name;
+@property (readonly) NSImage	*icon;
 
-@property (strong) void (^terminateHandler)(TPProcess *process);
+@property (readonly) pid_t pid;
+
+// Status.
+@property (assign) NSUInteger	launchSteps;
+@property (strong) NSString		*launchError;
+
+// -- Handlers --
+@property (strong) void (^terminateHandler)(TPProcess *process, BOOL userAction);
+
+@property (strong) void (^launchProgressHandler)(TPProcess *process, double progress);
+@property (strong) void (^launchErrorHandler)(TPProcess *process, NSString *error);
+
+
 
 @end
 
