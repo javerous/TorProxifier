@@ -28,7 +28,7 @@
 # if defined(DEBUG) && DEBUG
 #   define TPLogDebug(Format, ...) fprintf(stderr, "[control] "Format"\n", ## __VA_ARGS__)
 # else
-#   define TPLogDebug() (void)0
+#   define TPLogDebug(Format, ...) (void)0
 # endif
 
 #endif /* PrefixHeader_pch */

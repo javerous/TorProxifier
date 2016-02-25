@@ -28,7 +28,7 @@
 # if defined(DEBUG) && DEBUG
 #   define TPLogDebug(Format, ...) fprintf(stderr, "%s\n", [NSString stringWithFormat:@"[urlhook] "Format, ## __VA_ARGS__].UTF8String)
 # else
-#   define TPLogDebug() (void)0
+#   define TPLogDebug(Format, ...) (void)0
 # endif
 
 #endif /* PrefixHeader_pch */
