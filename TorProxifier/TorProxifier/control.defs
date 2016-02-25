@@ -1,0 +1,67 @@
+/*
+ *  control.defs
+ *
+ *  Copyright 2016 Avérous Julien-Pierre
+ *
+ *  This file is part of TorProxifier.
+ *
+ *  TorProxifier is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  TorProxifier is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with TorProxifier.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+
+
+import "control_types.h";
+
+// Subsystem
+subsystem mtp 424242424242;
+
+
+// Prefixes.
+serverprefix	mig_server_;
+userprefix		mig_client_;
+
+
+// Types.
+type tp_key_t = c_string[*:30];
+type tp_value_t = c_string[*:1024];
+type tp_path_t = c_string[*:1024];
+
+
+// Routines.
+routine get_setting
+(
+	port: mach_port_t;
+	ServerAuditToken audit: audit_token_t;
+	in key: tp_key_t;
+	out value: tp_value_t
+);
+
+routine is_tplibrary
+(
+	port: mach_port_t;
+	ServerAuditToken audit: audit_token_t;
+	in path: tp_path_t;
+	out tplib: boolean_t
+);
+
+simpleroutine notify
+(
+	port: mach_port_t;
+	ServerAuditToken audit: audit_token_t;
+	in key: tp_key_t;
+	in value: tp_value_t
+);

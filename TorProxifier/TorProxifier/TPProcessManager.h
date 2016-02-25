@@ -32,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Forward
 
 @class TPProcess;
+@class TPConfiguration;
+
 
 
 /*
@@ -53,8 +55,8 @@ typedef enum
 
 @interface TPProcessManager : NSObject
 
-// -- Instance --
-- (instancetype)initWithSocksHost:(nullable NSString *)socksHost socksPort:(uint16_t)socksPort;
+// -- Configuration --
+@property (copy, nullable) TPConfiguration *configuration;
 
 // -- Launch --
 - (void)launchProcessWithPath:(NSString *)path;
@@ -64,6 +66,5 @@ typedef enum
 @property (strong) void (^processesChangeHandler)(NSArray *processes, TPProcessChange change);
 
 @end
-
 
 NS_ASSUME_NONNULL_END

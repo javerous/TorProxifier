@@ -10,7 +10,7 @@ page for details */
 
 /* Allow TSOCKS_CONF_FILE in environment to specify config file
 location */
-#define ALLOW_ENV_CONFIG 1
+//#define ALLOW_ENV_CONFIG 1
 
 /* Use _GNU_SOURCE to define RTLD_NEXT, mostly for RH7 systems */
 /* #undef USE_GNU_SOURCE */

@@ -27,17 +27,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
+** Forward
+*/
+#pragma mark - Forward
+
+@class TPConfiguration;
+
+
+/*
 ** TPMainWindowController
 */
 #pragma mark - TPMainWindowController
 
 @interface TPMainWindowController : NSWindowController
 
-// -- Instance --
-+ (instancetype)sharedController;
-
-// -- Life --
-- (void)showWithSocksHost:(NSString *)host socksPort:(uint16_t)port;
+// -- Configuration --
+@property (copy) TPConfiguration *configuration;
 
 @end
 

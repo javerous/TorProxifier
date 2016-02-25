@@ -36,10 +36,13 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation TPProcess
 {
 	dispatch_queue_t	_localQueue;
+	dispatch_queue_t	_externQueue;
+
 	NSTask				*_task;
 	
-	NSString			*_socksHost;
-	uint16_t			_socksPort;
+	NSUInteger	_launchStep;
+	NSString	*_launchError;
+	void (^_launchUpdateHandler)(TPProcess * _Nonnull, double);
 }
 
 
@@ -48,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TPProcess - Instance
 
-- (instancetype)initWithPath:(NSString *)path socksHost:(nullable NSString *)socksHost socksPort:(uint16_t)socksPort
+- (instancetype)initWithPath:(NSString *)path
 {
 	self = [super init];
 	
@@ -57,13 +60,12 @@ NS_ASSUME_NONNULL_BEGIN
 		NSAssert(path, @"path is nil");
 		
 		_localQueue = dispatch_queue_create("com.sourcemac.torproxifier.process.local", DISPATCH_QUEUE_SERIAL);
+		_externQueue = dispatch_queue_create("com.sourcemac.torproxifier.process.extern", DISPATCH_QUEUE_SERIAL);
+
 		
 		_path = path;
 		_icon = [[NSWorkspace sharedWorkspace] iconForFile:path];
 		_name = [[NSFileManager defaultManager] displayNameAtPath:path];
-		
-		_socksHost = socksHost;
-		_socksPort = socksPort;
 	}
 	
 	return self;
@@ -76,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TPProcess - Life
 
-- (void)launch
+- (void)launchWithInjectedLibraries:(nullable NSArray *)libraries
 {
 	__weak TPProcess *weakSelf = self;
 	
@@ -102,51 +104,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 		[_task setLaunchPath:binPath];
 		
-		if (_socksHost)
+		if ([libraries count] > 0)
 		{
-			// > Get liburlhook path.
-			NSString *liburlhookPath = [[NSBundle mainBundle] pathForResource:@"liburlhook" ofType:@"dylib"];
-			
-			if (!liburlhookPath)
-			{
-				[self handleTermination];
-				return;
-			}
-			
-			// > Get libtsocks path.
-			NSString *libtsocksPath = [[NSBundle mainBundle] pathForResource:@"libtsocks" ofType:@"dylib"];
-			
-			if (!libtsocksPath)
-			{
-				[self handleTermination];
-				return;
-			}
-			
-			// > Build environment.
-			// >> tsocks.
-			NSMutableString *tsocksConf = [[NSMutableString alloc] init];
-			
-			[tsocksConf appendFormat:@"local = 127.0.0.0/255.0.0.0\n"];
-			[tsocksConf appendFormat:@"server = %@\n", _socksHost];
-			[tsocksConf appendFormat:@"server_port = %u\n", _socksPort];
-			[tsocksConf appendFormat:@"server_type = 4\n"];
+			NSString *insertEnv = [libraries componentsJoinedByString:@":"];
 
-			environment[@"TSOCKS_CONF_DATA"] = tsocksConf;
-
-			// >> urlhook.
-			environment[@"URL_PROTOCOL_PROXY"] = [NSString stringWithFormat:@"socks4a://%@:%u", _socksHost, _socksPort];
-			
-			environment[@"URL_SESSION_PROXY_HOST"] = _socksHost;
-			environment[@"URL_SESSION_PROXY_PORT"] = @(_socksPort);
-			
-			// >> dyld.
-			environment[@"DYLD_INSERT_LIBRARIES"] = [NSString stringWithFormat:@"%@:%@", liburlhookPath, libtsocksPath];
+			environment[@"DYLD_INSERT_LIBRARIES"] = insertEnv;
 			environment[@"DYLD_FORCE_FLAT_NAMESPACE"] = @"1";
 		}
 		
-#if defined(DEBUG) && DEBUG
-		NSLog(@"env: '%@'", environment);
-#endif
+		TPLogDebug(@"Process environment: '%@'", environment);
 		
 		[_task setEnvironment:environment];
 		
@@ -157,13 +123,13 @@ NS_ASSUME_NONNULL_BEGIN
 			if (!strongSelf)
 				return;
 			
-			[strongSelf handleTermination];
+			[strongSelf handleTerminationFromUserAction:NO];
 		};
 		
 		@try {
 			[_task launch];
 		} @catch (NSException *exception) {
-			[self handleTermination];
+			[self handleTerminationFromUserAction:NO];
 		}
 	});
 }
@@ -171,7 +137,118 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)terminate
 {
 	dispatch_async(_localQueue, ^{
-		[_task terminate];
+		if (_task.running)
+			[_task terminate];
+		else
+			[self handleTerminationFromUserAction:YES];
+	});
+}
+
+
+
+/*
+** TPProcess - Steps
+*/
+#pragma mark - Steps
+
+- (void)launchStepping
+{
+	dispatch_async(_localQueue, ^{
+
+		if (_launchStep + 1 > _launchSteps)
+			return;
+		
+		_launchStep++;
+		
+		[self handleLaunchProgress:((double)_launchStep / (double)_launchSteps)];
+	});
+}
+
+- (void)handleLaunchProgress:(double)progress
+{
+	if (progress < 0.0 || progress > 1.0)
+		return;
+	
+	dispatch_async(_externQueue, ^{
+		
+		void (^launchProgressHandler)(TPProcess *process, double progress) = self.launchProgressHandler;
+		
+		if (launchProgressHandler)
+			launchProgressHandler(self, progress);
+	});
+}
+
+- (void)setLaunchProgressHandler:(void (^)(TPProcess * _Nonnull, double))launchProgressHandler
+{
+	dispatch_async(_localQueue, ^{
+		
+		_launchUpdateHandler = launchProgressHandler;
+		
+		if (_launchSteps > 0)
+			[self handleLaunchProgress:((double)_launchStep / (double)_launchSteps)];
+		else
+			[self handleLaunchProgress:0.0];
+	});
+}
+
+- (void (^)(TPProcess * _Nonnull, double))launchProgressHandler
+{
+	__block void (^result)(TPProcess * _Nonnull, double);
+	
+	
+	dispatch_sync(_localQueue, ^{
+		result = _launchUpdateHandler;
+	});
+	
+	return result;
+}
+
+
+
+/*
+** TPProcess - Properties
+*/
+#pragma mark - TPProcess - Properties
+
+#pragma mark Process
+
+- (pid_t)pid
+{
+	__block pid_t pid;
+	
+	dispatch_sync(_localQueue, ^{
+		pid = [_task processIdentifier];
+	});
+	
+	return pid;
+}
+
+
+#pragma mark Launch Error
+
+- (NSString *)launchError
+{
+	__block NSString *error;
+	
+	dispatch_sync(_localQueue, ^{
+		error = _launchError;
+	});
+	
+	return error;
+}
+
+- (void)setLaunchError:(NSString *)error
+{
+	if (!error)
+		return;
+	
+	dispatch_async(_localQueue, ^{
+		_launchError = error;
+		
+		void (^launchErrorHandler)(TPProcess *process, NSString *error) = self.launchErrorHandler;
+		
+		if (launchErrorHandler)
+			launchErrorHandler(self, error);
 	});
 }
 
@@ -182,20 +259,20 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TPProcess - Helpers
 
-- (void)handleTermination
+- (void)handleTerminationFromUserAction:(BOOL)userAction
 {
 	// Clean task.
 	dispatch_async(_localQueue, ^{
 		_task = nil;
 	});
-	
+
 	// Notify.
-	void (^terminateHandler)(TPProcess *process) = self.terminateHandler;
+	void (^terminateHandler)(TPProcess *process, BOOL userAction) = self.terminateHandler;
 
 	if (terminateHandler)
 	{
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			terminateHandler(self);
+			terminateHandler(self, userAction);
 		});
 	}
 }

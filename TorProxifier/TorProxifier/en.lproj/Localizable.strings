@@ -22,3 +22,12 @@
 
 /* Assistant */
 "ac_title_welcome" = "Configure TorProxifier";
+
+/* Process */
+"process_no_status" = "No status.";
+"process_launching" = "Process is launching (%lu%%).";
+"process_launched" = "Process is tunneled through Tor.";
+
+"process_err_tor_socket" = "Can't verify that sockets are well redirected to Tor network. Launch of the process is stopped.";
+"process_err_tor_nsurlconnection" = "Can't verify that NSURLConnection are well redirected to Tor network. Launch of the process is stopped.";
+"process_err_tor_nsurlsession" = "Can't verify that NSURLSession are well redirected to Tor network. Launch of the process is stopped.";

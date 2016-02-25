@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E851B7851C7BD26F0083D155 /* TPControlHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E851B7831C7BD26F0083D155 /* TPControlHelper.h */; };
 		E8A78E431C5AB92E00D3C999 /* common.c in Sources */ = {isa = PBXBuildFile; fileRef = E8A78E3A1C5AB92E00D3C999 /* common.c */; };
 		E8A78E441C5AB92E00D3C999 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = E8A78E3B1C5AB92E00D3C999 /* common.h */; };
 		E8A78E451C5AB92E00D3C999 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = E8A78E3C1C5AB92E00D3C999 /* config.h */; };
@@ -19,6 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E851B7831C7BD26F0083D155 /* TPControlHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TPControlHelper.h; path = ../TPControlHelper.h; sourceTree = "<group>"; };
 		E8A78DFA1C5AAE5B00D3C999 /* libtsocks.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libtsocks.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8A78E3A1C5AB92E00D3C999 /* common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = common.c; sourceTree = "<group>"; };
 		E8A78E3B1C5AB92E00D3C999 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
@@ -45,6 +47,7 @@
 		E8A78DF11C5AAE5B00D3C999 = {
 			isa = PBXGroup;
 			children = (
+				E851B7831C7BD26F0083D155 /* TPControlHelper.h */,
 				E8A78DFC1C5AAE5B00D3C999 /* tsocks */,
 				E8A78DFB1C5AAE5B00D3C999 /* Products */,
 			);
@@ -83,6 +86,7 @@
 			files = (
 				E8A78E471C5AB92E00D3C999 /* dead_pool.h in Headers */,
 				E8A78E451C5AB92E00D3C999 /* config.h in Headers */,
+				E851B7851C7BD26F0083D155 /* TPControlHelper.h in Headers */,
 				E8A78E4B1C5AB92E00D3C999 /* tsocks.h in Headers */,
 				E8A78E4F1C5ABA6A00D3C999 /* parser.h in Headers */,
 				E8A78E441C5AB92E00D3C999 /* common.h in Headers */,
@@ -193,7 +197,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 			};
@@ -239,9 +242,11 @@
 		E8A78E041C5AAE5B00D3C999 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -249,9 +254,11 @@
 		E8A78E051C5AAE5B00D3C999 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
