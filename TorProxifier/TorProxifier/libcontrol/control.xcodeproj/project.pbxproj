@@ -274,6 +274,7 @@
 				GCC_PREFIX_HEADER = control/PrefixHeader.pch;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -289,6 +290,7 @@
 				GCC_PREFIX_HEADER = control/PrefixHeader.pch;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
