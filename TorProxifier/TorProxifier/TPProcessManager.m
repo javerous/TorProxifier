@@ -411,8 +411,6 @@ kern_return_t mig_server_notify(mach_port_t port, audit_token_t audit, tp_key_t 
 	{
 		TPLogDebug(@"[MIG] 'notify': client breaked in control - pid='%d'", pid);
 		
-		
-		NSLog(@"**** steps: %lu", process.launchSteps);
 		[process launchStepping];
 
 		return KERN_SUCCESS;
