@@ -14,9 +14,11 @@
 		E81333581C7E2BA30034FC48 /* TPService.h in Headers */ = {isa = PBXBuildFile; fileRef = E81333561C7E2BA30034FC48 /* TPService.h */; };
 		E813335C1C7E2F570034FC48 /* TPEnvironmentHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E813335A1C7E2F570034FC48 /* TPEnvironmentHelper.m */; };
 		E813335D1C7E2F570034FC48 /* TPEnvironmentHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E813335B1C7E2F570034FC48 /* TPEnvironmentHelper.h */; };
+		E85BA8A61C80AC3800CDD144 /* tp_info.c in Sources */ = {isa = PBXBuildFile; fileRef = E85BA8A41C80AC3800CDD144 /* tp_info.c */; };
+		E85BA8A71C80AC3800CDD144 /* tp_info.h in Headers */ = {isa = PBXBuildFile; fileRef = E85BA8A51C80AC3800CDD144 /* tp_info.h */; };
+		E85BA8AE1C80BB2C00CDD144 /* breaker_int.c in Sources */ = {isa = PBXBuildFile; fileRef = E85BA8AD1C80BB2C00CDD144 /* breaker_int.c */; };
 		E8B54EE41C7A7E3700506AF6 /* control.defs in Sources */ = {isa = PBXBuildFile; fileRef = E8B54EE11C7A7E3700506AF6 /* control.defs */; };
 		E8B54EE51C7A7E3700506AF6 /* control_types.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B54EE21C7A7E3700506AF6 /* control_types.h */; };
-		E8BEE7031C79EE0100C3C8E6 /* breaker.c in Sources */ = {isa = PBXBuildFile; fileRef = E8BEE7021C79EE0100C3C8E6 /* breaker.c */; };
 		E8BEE70A1C7A05A800C3C8E6 /* TPControl.m in Sources */ = {isa = PBXBuildFile; fileRef = E8BEE7081C7A05A800C3C8E6 /* TPControl.m */; };
 /* End PBXBuildFile section */
 
@@ -28,11 +30,14 @@
 		E81333561C7E2BA30034FC48 /* TPService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPService.h; sourceTree = "<group>"; };
 		E813335A1C7E2F570034FC48 /* TPEnvironmentHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPEnvironmentHelper.m; sourceTree = "<group>"; };
 		E813335B1C7E2F570034FC48 /* TPEnvironmentHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPEnvironmentHelper.h; sourceTree = "<group>"; };
+		E85BA8A41C80AC3800CDD144 /* tp_info.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tp_info.c; sourceTree = "<group>"; };
+		E85BA8A51C80AC3800CDD144 /* tp_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tp_info.h; sourceTree = "<group>"; };
+		E85BA8AD1C80BB2C00CDD144 /* breaker_int.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = breaker_int.c; sourceTree = "<group>"; };
 		E875B6F01C7C98F500EC3521 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		E8B54EE11C7A7E3700506AF6 /* control.defs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.mig; name = control.defs; path = TorProxifier/control.defs; sourceTree = "<group>"; };
 		E8B54EE21C7A7E3700506AF6 /* control_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = control_types.h; path = TorProxifier/control_types.h; sourceTree = "<group>"; };
 		E8BEE6F51C79EDE100C3C8E6 /* libcontrol.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libcontrol.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		E8BEE7021C79EE0100C3C8E6 /* breaker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = breaker.c; sourceTree = "<group>"; };
+		E8BEE7021C79EE0100C3C8E6 /* breaker_prot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = breaker_prot.c; sourceTree = "<group>"; };
 		E8BEE7081C7A05A800C3C8E6 /* TPControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPControl.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -50,7 +55,7 @@
 		E81333591C7E2D990034FC48 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				E8BEE7021C79EE0100C3C8E6 /* breaker.c */,
+				E85BA8A31C80ABF900CDD144 /* breaker */,
 				E81333561C7E2BA30034FC48 /* TPService.h */,
 				E81333551C7E2BA30034FC48 /* TPService.c */,
 				E80A28C71C7CC8D8001040C8 /* TPNetworkHelper.h */,
@@ -59,6 +64,17 @@
 				E813335A1C7E2F570034FC48 /* TPEnvironmentHelper.m */,
 			);
 			name = Helpers;
+			sourceTree = "<group>";
+		};
+		E85BA8A31C80ABF900CDD144 /* breaker */ = {
+			isa = PBXGroup;
+			children = (
+				E85BA8AD1C80BB2C00CDD144 /* breaker_int.c */,
+				E8BEE7021C79EE0100C3C8E6 /* breaker_prot.c */,
+				E85BA8A51C80AC3800CDD144 /* tp_info.h */,
+				E85BA8A41C80AC3800CDD144 /* tp_info.c */,
+			);
+			name = breaker;
 			sourceTree = "<group>";
 		};
 		E88652831C7CDE8B0075A27E /* control */ = {
@@ -106,6 +122,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E85BA8A71C80AC3800CDD144 /* tp_info.h in Headers */,
 				E813335D1C7E2F570034FC48 /* TPEnvironmentHelper.h in Headers */,
 				E81333581C7E2BA30034FC48 /* TPService.h in Headers */,
 				E8B54EE51C7A7E3700506AF6 /* control_types.h in Headers */,
@@ -171,11 +188,12 @@
 			files = (
 				E80A28C81C7CC8D8001040C8 /* TPNetworkHelper.m in Sources */,
 				E81333531C7E2B500034FC48 /* TPStealth.c in Sources */,
+				E85BA8AE1C80BB2C00CDD144 /* breaker_int.c in Sources */,
 				E813335C1C7E2F570034FC48 /* TPEnvironmentHelper.m in Sources */,
 				E8BEE70A1C7A05A800C3C8E6 /* TPControl.m in Sources */,
 				E81333571C7E2BA30034FC48 /* TPService.c in Sources */,
 				E8B54EE41C7A7E3700506AF6 /* control.defs in Sources */,
-				E8BEE7031C79EE0100C3C8E6 /* breaker.c in Sources */,
+				E85BA8A61C80AC3800CDD144 /* tp_info.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
