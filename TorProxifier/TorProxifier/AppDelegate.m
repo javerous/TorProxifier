@@ -253,6 +253,15 @@ static BOOL is_port_available(uint16_t port);
 			
 			if (_torManager != nil || configuration.bundled == NO)
 			{
+				// Copy back the bundled tor configuration.
+				if (_torManager != nil)
+				{
+					SMTorConfiguration *tconfiguration = [_torManager configuration];
+					
+					configuration.socksHost = tconfiguration.socksHost;
+					configuration.socksPort = tconfiguration.socksPort;
+				}
+				
 				ctrl(SMOperationsControlContinue);
 				return;
 			}

@@ -1,36 +1,20 @@
-/*
- *  breaker.c
- *
- *  Copyright 2016 Avérous Julien-Pierre
- *
- *  This file is part of TorProxifier.
- *
- *  TorProxifier is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  TorProxifier is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with TorProxifier.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+//
+//  mach_helper.c
+//  control
+//
+//  Created by Julien-Pierre Avérous on 26/02/2016.
+//  Copyright © 2016 Julien-Pierre Avérous. All rights reserved.
+//
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <signal.h>
-#include <dlfcn.h>
+#include <stdlib.h>
 
 #include <mach-o/dyld.h>
 #include <mach/mach.h>
 
 #include <sys/mman.h>
 
+#include "tp_info.h"
 
 
 /*
@@ -42,36 +26,16 @@
 #define SMRoundDown(Value, Round)	((Value) & ~((Round) - 1))
 
 
-
 /*
-** Globals
+** Functions
 */
-#pragma mark - Globals
+#pragma mark - Functions
 
-static vm_size_t	hostPageSize = 0;
-static uint64_t		pageAddress = 0;
-static int			pageProtection = 0;
-
-
-/*
-** Prototypes
-*/
-#pragma mark - Prototypes
-
-extern void tp_handle_bp(void); // have to be implemented somewhere.
-
-static void sig_handler(int s);
-
-
-
-/*
-** Install entry-point "breakpoint"
-*/
-#pragma mark - Install entry-point "breakpoint"
-
-__attribute__((constructor))
-void construct()
+boolean_t tp_get_process_info(tp_process_info *info)
 {
+	if (!info)
+		return false;
+	
 	// Search main binary image.
 	uint32_t cnt = _dyld_image_count();
 	
@@ -91,7 +55,7 @@ void construct()
 	}
 	
 	if (!hdr)
-		return;
+		return false;
 	
 	// Parse header info.
 	size_t		hdrSize = 0;
@@ -101,7 +65,7 @@ void construct()
 	if (*((uint32_t *)hdr) == MH_MAGIC)
 	{
 		const struct mach_header *header = hdr;
-
+		
 		hdrSize = sizeof(struct mach_header);
 		hdrNcmds = header->ncmds;
 		hdrCPU = header->cputype;
@@ -109,7 +73,7 @@ void construct()
 	else if (*((uint32_t *)hdr) == MH_MAGIC_64)
 	{
 		const struct mach_header_64 *header = hdr;
-
+		
 		hdrSize = sizeof(struct mach_header_64);
 		hdrNcmds = header->ncmds;
 		hdrCPU = header->cputype;
@@ -117,11 +81,18 @@ void construct()
 	else
 	{
 		TPLogDebug("didn't found valid header");
+		return false;
 	}
 	
+	info->machHeader = (const void *)hdr;
+	
 	// Get page-size.
+	vm_size_t hostPageSize = 0;
+	
 	if (host_page_size(mach_host_self(), &hostPageSize) != KERN_SUCCESS)
 		hostPageSize = 4096;
+	
+	info->pageSize = hostPageSize;
 	
 	// Search for LC_MAIN or LC_UNIXTHREAD
 	struct load_command	*lc = (struct load_command *)((char *)hdr + hdrSize);
@@ -175,7 +146,7 @@ void construct()
 			}
 		}
 	}
-
+	
 	// Compute ptr.
 	uint64_t entryAddress = 0;
 	
@@ -186,12 +157,15 @@ void construct()
 	else
 	{
 		TPLogDebug("didn't found LC_MAIN or valid LC_UNIXTHREAD");
-		return;
+		return false;
 	}
 	
-	pageAddress = SMRoundDown(entryAddress, hostPageSize);
-
+	info->entryPoint = entryAddress;
+	info->entryPage = SMRoundDown(entryAddress, hostPageSize);
+	
 	// Convert protection.
+	int pageProtection = 0;
+	
 	if (textInitProtect & VM_PROT_READ)
 		pageProtection |= PROT_READ;
 	if (textInitProtect & VM_PROT_WRITE)
@@ -199,43 +173,7 @@ void construct()
 	if (textInitProtect & VM_PROT_EXECUTE)
 		pageProtection |= PROT_EXEC;
 	
-	TPLogDebug("headerPtr \t %p", hdr);
-	TPLogDebug("pagePtr \t 0x%llx", pageAddress);
-	TPLogDebug("entryPtr \t 0x%llx", entryAddress);
+	info->entryProtection = pageProtection;
 	
-	// Allow only read-write (x86_64) or nothing (i386), so it will "break" when executing entry point.
-#if defined(__x86_64__)
-	if (mprotect((void *)pageAddress, hostPageSize, (pageProtection & ~PROT_EXEC)) != 0)
-#else
-	if (mprotect((void *)pageAddress, hostPageSize, 0) != 0)
-#endif
-	{
-		TPLogDebug("can't change protection");
-		return;
-	}
-	
-	// Activate signal.
-	signal(SIGSEGV, sig_handler);
-	signal(SIGBUS, sig_handler);
-	
-	TPLogDebug("breakpoint installed");
-}
-
-static void sig_handler(int s)
-{
-	TPLogDebug("got signal %d", s);
-
-	if (s != SIGSEGV && s != SIGBUS)
-		return;
-	
-	// Reset initial protection, so the app can continue normal operations.
-	if (pageAddress != 0)
-		mprotect((void *)pageAddress, hostPageSize, pageProtection);
-	
-	// Deactivates signals handling.
-	signal(SIGSEGV, SIG_DFL);
-	signal(SIGBUS, SIG_DFL);
-	
-	// Do our code in sync. Yes, in the signal handler, YOLO. Yes.
-	tp_handle_bp();
+	return true;
 }
