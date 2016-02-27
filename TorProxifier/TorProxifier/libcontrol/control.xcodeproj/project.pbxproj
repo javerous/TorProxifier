@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		E80A28C81C7CC8D8001040C8 /* TPNetworkHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E80A28C61C7CC8D8001040C8 /* TPNetworkHelper.m */; };
 		E80A28C91C7CC8D8001040C8 /* TPNetworkHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E80A28C71C7CC8D8001040C8 /* TPNetworkHelper.h */; };
-		E81333531C7E2B500034FC48 /* TPStealth.c in Sources */ = {isa = PBXBuildFile; fileRef = E81333511C7E2B500034FC48 /* TPStealth.c */; };
+		E81333531C7E2B500034FC48 /* TPHookDyld.c in Sources */ = {isa = PBXBuildFile; fileRef = E81333511C7E2B500034FC48 /* TPHookDyld.c */; };
 		E81333571C7E2BA30034FC48 /* TPService.c in Sources */ = {isa = PBXBuildFile; fileRef = E81333551C7E2BA30034FC48 /* TPService.c */; };
 		E81333581C7E2BA30034FC48 /* TPService.h in Headers */ = {isa = PBXBuildFile; fileRef = E81333561C7E2BA30034FC48 /* TPService.h */; };
 		E813335C1C7E2F570034FC48 /* TPEnvironmentHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E813335A1C7E2F570034FC48 /* TPEnvironmentHelper.m */; };
@@ -20,12 +20,13 @@
 		E8B54EE41C7A7E3700506AF6 /* control.defs in Sources */ = {isa = PBXBuildFile; fileRef = E8B54EE11C7A7E3700506AF6 /* control.defs */; };
 		E8B54EE51C7A7E3700506AF6 /* control_types.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B54EE21C7A7E3700506AF6 /* control_types.h */; };
 		E8BEE70A1C7A05A800C3C8E6 /* TPControl.m in Sources */ = {isa = PBXBuildFile; fileRef = E8BEE7081C7A05A800C3C8E6 /* TPControl.m */; };
+		E8D2C60F1C82442900B51D74 /* TPHookExec.c in Sources */ = {isa = PBXBuildFile; fileRef = E8D2C60E1C82442900B51D74 /* TPHookExec.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		E80A28C61C7CC8D8001040C8 /* TPNetworkHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPNetworkHelper.m; sourceTree = "<group>"; };
 		E80A28C71C7CC8D8001040C8 /* TPNetworkHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPNetworkHelper.h; sourceTree = "<group>"; };
-		E81333511C7E2B500034FC48 /* TPStealth.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TPStealth.c; sourceTree = "<group>"; };
+		E81333511C7E2B500034FC48 /* TPHookDyld.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TPHookDyld.c; sourceTree = "<group>"; };
 		E81333551C7E2BA30034FC48 /* TPService.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TPService.c; sourceTree = "<group>"; };
 		E81333561C7E2BA30034FC48 /* TPService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPService.h; sourceTree = "<group>"; };
 		E813335A1C7E2F570034FC48 /* TPEnvironmentHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPEnvironmentHelper.m; sourceTree = "<group>"; };
@@ -39,6 +40,7 @@
 		E8BEE6F51C79EDE100C3C8E6 /* libcontrol.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libcontrol.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8BEE7021C79EE0100C3C8E6 /* breaker_prot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = breaker_prot.c; sourceTree = "<group>"; };
 		E8BEE7081C7A05A800C3C8E6 /* TPControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPControl.m; sourceTree = "<group>"; };
+		E8D2C60E1C82442900B51D74 /* TPHookExec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TPHookExec.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,7 +83,8 @@
 			isa = PBXGroup;
 			children = (
 				E8BEE7081C7A05A800C3C8E6 /* TPControl.m */,
-				E81333511C7E2B500034FC48 /* TPStealth.c */,
+				E81333511C7E2B500034FC48 /* TPHookDyld.c */,
+				E8D2C60E1C82442900B51D74 /* TPHookExec.c */,
 				E81333591C7E2D990034FC48 /* Helpers */,
 				E875B6F01C7C98F500EC3521 /* PrefixHeader.pch */,
 			);
@@ -187,13 +190,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				E80A28C81C7CC8D8001040C8 /* TPNetworkHelper.m in Sources */,
-				E81333531C7E2B500034FC48 /* TPStealth.c in Sources */,
+				E81333531C7E2B500034FC48 /* TPHookDyld.c in Sources */,
 				E85BA8AE1C80BB2C00CDD144 /* breaker_int.c in Sources */,
 				E813335C1C7E2F570034FC48 /* TPEnvironmentHelper.m in Sources */,
 				E8BEE70A1C7A05A800C3C8E6 /* TPControl.m in Sources */,
 				E81333571C7E2BA30034FC48 /* TPService.c in Sources */,
 				E8B54EE41C7A7E3700506AF6 /* control.defs in Sources */,
 				E85BA8A61C80AC3800CDD144 /* tp_info.c in Sources */,
+				E8D2C60F1C82442900B51D74 /* TPHookExec.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
