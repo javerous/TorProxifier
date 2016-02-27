@@ -212,9 +212,9 @@
 		E8560CF41C61664400F27998 /* Injections */ = {
 			isa = PBXGroup;
 			children = (
+				E8B54ED61C7A7D8E00506AF6 /* control.xcodeproj */,
 				E8A78E2D1C5AAEDB00D3C999 /* urlhook.xcodeproj */,
 				E8A78E0C1C5AAE7C00D3C999 /* tsocks.xcodeproj */,
-				E8B54ED61C7A7D8E00506AF6 /* control.xcodeproj */,
 			);
 			name = Injections;
 			sourceTree = "<group>";

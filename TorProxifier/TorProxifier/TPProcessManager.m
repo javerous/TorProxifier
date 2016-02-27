@@ -265,6 +265,11 @@ static uint8_t managerKey = 0;
 				*oprocess = process;
 			return YES;
 		}
+		
+		if ([process parentOfPID:pid])
+		{
+			return YES;
+		}
 	}
 	
 #if defined(DEBUG) && DEBUG

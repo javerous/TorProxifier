@@ -22,6 +22,8 @@
 
 @import Cocoa;
 
+#include <sys/sysctl.h>
+
 #import "TPProcess.h"
 
 
@@ -38,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_queue_t	_localQueue;
 	dispatch_queue_t	_externQueue;
 
-	NSTask				*_task;
+	NSTask *_task;
 	
 	NSUInteger	_launchStep;
 	NSString	*_launchError;
@@ -61,7 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		_localQueue = dispatch_queue_create("com.sourcemac.torproxifier.process.local", DISPATCH_QUEUE_SERIAL);
 		_externQueue = dispatch_queue_create("com.sourcemac.torproxifier.process.extern", DISPATCH_QUEUE_SERIAL);
-
 		
 		_path = path;
 		_icon = [[NSWorkspace sharedWorkspace] iconForFile:path];
@@ -201,6 +202,47 @@ NS_ASSUME_NONNULL_BEGIN
 	});
 	
 	return result;
+}
+
+
+/*
+** TPProcess - Parent
+*/
+#pragma mark - TPProcess - Parent
+
+- (BOOL)parentOfPID:(pid_t)pid
+{
+	// XXX perhaps we can use a cache. The problem with a cache is to clean it, because pid can cycle.
+	
+	pid_t rpid = self.pid;
+	
+	while (1)
+	{
+		pid_t ppid = [[self class] PPIDForPID:pid];
+		
+		if (ppid < 0)
+			return NO;
+		
+		if (ppid == rpid)
+			return YES;
+	}
+	
+	return NO;
+}
+
++ (pid_t)PPIDForPID:(pid_t)pid
+{
+	struct kinfo_proc info;
+	size_t	length = sizeof(struct kinfo_proc);
+	int		mib[4] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, pid };
+	
+	if (sysctl(mib, 4, &info, &length, NULL, 0) < 0)
+		return -1;
+	
+	if (length == 0)
+		return -1;
+	
+	return info.kp_eproc.e_ppid;
 }
 
 

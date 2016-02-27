@@ -1,5 +1,5 @@
 /*
- *  TPStealth.c
+ *  TPHookDyld.c
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -19,6 +19,16 @@
  *  along with TorProxifier.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+
+/*
+ About:
+	This file is there to hook _dyld functions, to hide ourself from _dyld functions.
+ 
+ Why:
+	Some shareware / commercial app scan for loaded images to check some memory integrity.
+ */
+
 
 #include <mach-o/dyld.h>
 #include <dispatch/dispatch.h>

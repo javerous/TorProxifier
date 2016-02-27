@@ -23,3 +23,5 @@
 #pragma once
 
 void remove_dyld_insert(void);
+
+void restore_dyld_insert_buffer(char * const *envp, char ***out_envp);

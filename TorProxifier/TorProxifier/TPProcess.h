@@ -43,6 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 // -- Steps --
 - (void)launchStepping;
 
+// -- Parent --
+- (BOOL)parentOfPID:(pid_t)pid;
+
 // -- Properties --
 // Process.
 @property (readonly) NSString	*path;
