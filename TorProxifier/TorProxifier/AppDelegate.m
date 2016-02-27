@@ -367,8 +367,15 @@ static BOOL is_port_available(uint16_t port);
 				
 				if (startInfo.kind == SMInfoInfo)
 				{
-				 if (startInfo.code == SMTorManagerEventStartDone)
-					 ctrl(SMOperationsControlContinue);
+					if (startInfo.code == SMTorManagerEventStartDone)
+						ctrl(SMOperationsControlContinue);
+				}
+				else if (startInfo.kind == SMInfoWarning)
+				{
+					if (startInfo.code == SMTorManagerWarningStartCanceled)
+					{
+						ctrl(SMOperationsControlContinue);
+					}
 				}
 				else if (startInfo.kind == SMInfoError)
 				{
