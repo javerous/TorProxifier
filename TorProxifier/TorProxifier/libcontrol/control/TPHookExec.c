@@ -21,6 +21,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <spawn.h>
 
@@ -38,8 +39,12 @@
 */
 #pragma mark - Prototypes
 
+// Hooks.
 static int p_execve(const char *path, char * const *argv, char * const *envp);
 static int p_posix_spawn(pid_t * __restrict pid, const char * __restrict path, const posix_spawn_file_actions_t * file_actions, const posix_spawnattr_t * __restrict attrp, char *const __argv[ __restrict], char *const __envp[ __restrict]);
+
+// Helpers.
+static void free_array(char **array);
 
 
 
@@ -78,8 +83,12 @@ static int p_execve(const char *path, char * const *argv, char * const *envp)
 	for (int i = 0; nenvp[i]; i++)
 		TPLogDebug("-> '%s'", nenvp[i]);
 #endif
+	
+	int result = execve(path, argv, nenvp);
 
-	return execve(path, argv, nenvp);
+	free_array(nenvp);
+
+	return result;
 }
 
 static int p_posix_spawn(pid_t * __restrict pid, const char * __restrict path, const posix_spawn_file_actions_t * file_actions, const posix_spawnattr_t * __restrict attrp, char *const __argv[ __restrict], char *const __envp[ __restrict])
@@ -94,5 +103,30 @@ static int p_posix_spawn(pid_t * __restrict pid, const char * __restrict path, c
 		TPLogDebug("-> '%s'", nenvp[i]);
 #endif
 	
-	return posix_spawn(pid, path, file_actions, attrp, __argv, nenvp);
+	int result = posix_spawn(pid, path, file_actions, attrp, __argv, nenvp);
+	
+	free_array(nenvp);
+	
+	return result;
+}
+
+
+
+/*
+** Helpers
+*/
+#pragma mark - Helpers
+
+static void free_array(char **array)
+{
+	if (!array)
+		return;
+	
+	int		i = 0;
+	char	*item = NULL;
+	
+	while ((item = array[i++]))
+		free(item);
+	
+	free(array);
 }
