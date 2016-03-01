@@ -29,6 +29,7 @@
 		E8A78E391C5AAF3200D3C999 /* libtsocks.dylib in Copy Injections Libraries */ = {isa = PBXBuildFile; fileRef = E8A78E111C5AAE7C00D3C999 /* libtsocks.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E8B54ED41C7A762A00506AF6 /* control.defs in Sources */ = {isa = PBXBuildFile; fileRef = E8B54ED31C7A762A00506AF6 /* control.defs */; settings = {ATTRIBUTES = (Server, ); }; };
 		E8B54EDE1C7A7DB600506AF6 /* libcontrol.dylib in Copy Injections Libraries */ = {isa = PBXBuildFile; fileRef = E8B54EDB1C7A7D8E00506AF6 /* libcontrol.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E8B801191C860BF200ED53CE /* app_template.pdf in Resources */ = {isa = PBXBuildFile; fileRef = E8B801181C860BF200ED53CE /* app_template.pdf */; };
 		E8DFD0621C5E9C81008C64AD /* TPMainWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8DFD0611C5E9C81008C64AD /* TPMainWindowController.m */; };
 		E8DFD0691C5E9CDC008C64AD /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E8DFD0681C5E9CDC008C64AD /* MainWindow.xib */; };
 		E8DFD06C1C5EA22B008C64AD /* ProcessView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E8DFD06B1C5EA22B008C64AD /* ProcessView.xib */; };
@@ -140,6 +141,7 @@
 		E8B54ED31C7A762A00506AF6 /* control.defs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.mig; name = control.defs; path = TorProxifier/control.defs; sourceTree = "<group>"; };
 		E8B54ED51C7A79AA00506AF6 /* control_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = control_types.h; path = TorProxifier/control_types.h; sourceTree = "<group>"; };
 		E8B54ED61C7A7D8E00506AF6 /* control.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = control.xcodeproj; path = TorProxifier/libcontrol/control.xcodeproj; sourceTree = "<group>"; };
+		E8B801181C860BF200ED53CE /* app_template.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = app_template.pdf; sourceTree = "<group>"; };
 		E8DFD0601C5E9C81008C64AD /* TPMainWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPMainWindowController.h; sourceTree = "<group>"; };
 		E8DFD0611C5E9C81008C64AD /* TPMainWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPMainWindowController.m; sourceTree = "<group>"; };
 		E8DFD0681C5E9CDC008C64AD /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MainWindow.xib; path = Base.lproj/MainWindow.xib; sourceTree = "<group>"; };
@@ -181,6 +183,7 @@
 			isa = PBXGroup;
 			children = (
 				E8A78DE81C5AAD1100D3C999 /* MainMenu.xib */,
+				E8B801181C860BF200ED53CE /* app_template.pdf */,
 				E8A78DE61C5AAD1100D3C999 /* Assets.xcassets */,
 				E80668BA1C617735001AEB6D /* Localizable.strings */,
 				E8A78DEB1C5AAD1100D3C999 /* Info.plist */,
@@ -460,6 +463,7 @@
 				E8DFD06C1C5EA22B008C64AD /* ProcessView.xib in Resources */,
 				E80668B81C617735001AEB6D /* Localizable.strings in Resources */,
 				E8A78DE71C5AAD1100D3C999 /* Assets.xcassets in Resources */,
+				E8B801191C860BF200ED53CE /* app_template.pdf in Resources */,
 				E80668B51C6170F3001AEB6D /* TPPanel_Welcome.xib in Resources */,
 				E8A78DEA1C5AAD1100D3C999 /* MainMenu.xib in Resources */,
 				E8DFD0691C5E9CDC008C64AD /* MainWindow.xib in Resources */,

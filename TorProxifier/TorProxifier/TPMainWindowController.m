@@ -109,12 +109,33 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	// Create drop zone.
 	__weak TPProcessManager *weakPM = _processManager;
+	NSSize					symmetricalSize;
 	
-	_dropZone = [[TPDropZone alloc] initWithFrame:NSMakeRect(0, 0, 293, 180)];
+	_dropZone = [[TPDropZone alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)];
 	
-	[_dropZone addConstraint:[NSLayoutConstraint constraintWithItem:_dropZone attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:293]];
-	[_dropZone addConstraint:[NSLayoutConstraint constraintWithItem:_dropZone attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:180]];
+	// > Drop image.
+	NSImage		*template = [NSImage imageNamed:@"app_template"];
+	NSColor		*templateColor = _dropZone.lineColor;
+	NSUInteger	size = 90;
 	
+	_dropZone.dropImage = [NSImage imageWithSize:NSMakeSize(size, size) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+		
+		[template drawInRect:NSMakeRect(0, 0, size, size) fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0f];
+		
+		[templateColor set];
+		
+		NSRectFillUsingOperation(NSMakeRect(0, 0, size, size), NSCompositeSourceAtop);
+		
+		return YES;
+	}];
+	
+	// > Resize to a good-looking size.
+	symmetricalSize = [_dropZone computeSizeForSymmetricalDashesWithMinWidth:280 minHeight:180];
+	
+	[_dropZone addConstraint:[NSLayoutConstraint constraintWithItem:_dropZone attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:symmetricalSize.width]];
+	[_dropZone addConstraint:[NSLayoutConstraint constraintWithItem:_dropZone attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:symmetricalSize.height]];
+	
+	// > Dropped file handler.
 	_dropZone.droppedFilesHandler = ^(NSArray * _Nonnull files) {
 		[weakPM launchProcessesWithPaths:files];
 	};

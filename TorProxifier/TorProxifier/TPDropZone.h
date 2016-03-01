@@ -33,7 +33,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TPDropZone : NSView
 
+// Properties.
+@property (strong) NSImage *dropImage;
+
+@property (strong) NSColor *lineColor;
+
 @property (strong) void (^droppedFilesHandler)(NSArray * _Nonnull files);
+
+// Tools.
+- (NSSize)computeSizeForSymmetricalDashesWithMinWidth:(CGFloat)minWidth minHeight:(CGFloat)minHeight;
 
 @end
 
