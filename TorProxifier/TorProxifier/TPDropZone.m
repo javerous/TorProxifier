@@ -32,6 +32,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - TPDropZone
 
 @implementation TPDropZone
+{
+	// Configuration.
+	CGFloat _lineWidth;
+	CGFloat	_linePattern[2];
+	
+	// Derivated values.
+	CGFloat _marginSize;
+	CGFloat _lineRadius;
+}
 
 
 /*
@@ -39,16 +48,84 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TPDropZone - Instance
 
+- (void)commonInit
+{
+	// Properties.
+	_lineWidth = 5.0;
+	
+	_linePattern[0] = 24.0;
+	_linePattern[1] = 14.0;
+	
+	_marginSize = 10.0 + _lineWidth / 2.0;
+	_lineRadius = (2.0 * _linePattern[0]) / M_PI; // compute radius so the curve is the exact same length than linePattern[0].
+	
+	_lineColor = [NSColor colorWithRed:(155.0 / 255.0) green:(155.0 / 255.0) blue:(155.0 / 255.0) alpha:1.0];
+	
+	// Drag & drop.
+	[self registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+}
+
 - (instancetype)initWithFrame:(NSRect)frameRect
 {
 	self = [super initWithFrame:frameRect];
 	
 	if (self)
 	{
-		[self registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+		[self commonInit];
 	}
 	
 	return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+	self = [super initWithCoder:coder];
+	
+	if (self)
+	{
+		[self commonInit];
+	}
+	
+	return self;
+}
+
+
+
+/*
+** TPDropZone - Tools
+*/
+#pragma mark - TPDropZone - Tools
+
+- (NSSize)computeSizeForSymmetricalDashesWithMinWidth:(CGFloat)minWidth minHeight:(CGFloat)minHeight
+{
+	// Compute good height.
+	CGFloat tMinHeight = 2.0 * (_lineRadius + _marginSize) + _linePattern[1];
+	
+	if (minHeight <= tMinHeight)
+		minHeight = tMinHeight;
+	else
+	{
+		CGFloat delta = minHeight - tMinHeight;
+		CGFloat dcount = ceil(delta / (_linePattern[1] + _linePattern[0]));
+		
+		minHeight = tMinHeight + dcount * (_linePattern[1] + _linePattern[0]);
+	}
+	
+	// Compute good width.
+	CGFloat tMinWidth = 2.0 * (_lineRadius + _marginSize) + _linePattern[1];
+	
+	if (minWidth <= tMinWidth)
+		minWidth = tMinWidth;
+	else
+	{
+		CGFloat delta = minWidth - tMinWidth;
+		CGFloat dcount = ceil(delta / (_linePattern[1] + _linePattern[0]));
+		
+		minWidth = tMinWidth + dcount * (_linePattern[1] + _linePattern[0]);
+	}
+	
+	// Give result.
+	return NSMakeSize(minWidth, minHeight);
 }
 
 
@@ -60,46 +137,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-	// Compute border.
-	NSColor *borderColor = [NSColor colorWithRed:(155.0 / 255.0) green:(155.0 / 255.0) blue:(155.0 / 255.0) alpha:1.0];
-	NSRect	borderFrame = NSIntegralRect(NSInsetRect([self bounds], 8.0, 8.0));
-	CGFloat borderWidth	= 5.0f;
-		
-	NSRect insetFrame = NSInsetRect(borderFrame, borderWidth / 2, borderWidth / 2);
-	
 	// Create dashed line.
-	CGFloat			pattern[2]	= { 24.0f, 14.0f };
-	NSBezierPath	*border = [NSBezierPath bezierPathWithRoundedRect:insetFrame xRadius:(3.0 * borderWidth) yRadius:(3.0 * borderWidth)];
+	NSRect			insetFrame = NSInsetRect([self bounds], _marginSize, _marginSize);
+	NSBezierPath	*border = [NSBezierPath bezierPathWithRoundedRect:insetFrame xRadius:_lineRadius yRadius:_lineRadius];
 	
-	[border setLineWidth:borderWidth];
-	[border setLineDash:pattern count:2 phase:0.0];
+	[border setLineWidth:_lineWidth];
+	[border setLineDash:_linePattern count:2 phase:0.0];
 
-	// Draw.
-	[borderColor set];
+	// Draw dashed line.
+	[self.lineColor set];
 	[border stroke];
 	
 	// Draw icon.
-	static dispatch_once_t	onceToken;
-	static NSImage			*icon;
+	NSImage *img = self.dropImage;
+	NSSize	size = img.size;
+	NSRect	drawRect = NSMakeRect(insetFrame.origin.x + (insetFrame.size.width - size.width) / 2.0, insetFrame.origin.y +(insetFrame.size.height - size.height) / 2.0, size.width, size.width);
 	
-	dispatch_once(&onceToken, ^{
-		
-		NSImage		*template = [NSImage imageNamed:@"app_template"];
-		NSUInteger	size = 128;
-		
-		icon = [NSImage imageWithSize:NSMakeSize(size, size) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
-			
-			[template drawInRect:NSMakeRect(0, 0, size, size) fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0f];
-
-			[borderColor set];
-			
-			NSRectFillUsingOperation(NSMakeRect(0, 0, size, size), NSCompositeSourceAtop);
-			
-			return YES;
-		}];
-	});
-	
-	[icon drawInRect:NSMakeRect((borderFrame.size.width - 100.0) / 2.0, (borderFrame.size.height - 100.0) / 2.0, 100, 100) fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0f];
+	[img drawInRect:drawRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0f];
 }
 
 
