@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 	_marginSize = 10.0 + _lineWidth / 2.0;
 	_lineRadius = (2.0 * _linePattern[0]) / M_PI; // compute radius so the curve is the exact same length than linePattern[0].
 	
-	_lineColor = [NSColor colorWithRed:(155.0 / 255.0) green:(155.0 / 255.0) blue:(155.0 / 255.0) alpha:1.0];
+	_dashColor = [NSColor colorWithRed:(155.0 / 255.0) green:(155.0 / 255.0) blue:(155.0 / 255.0) alpha:1.0];
 	
 	// Drag & drop.
 	[self registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
@@ -137,23 +137,60 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-	// Create dashed line.
+	// Dashed line border.
+	// > Configure.
 	NSRect			insetFrame = NSInsetRect([self bounds], _marginSize, _marginSize);
 	NSBezierPath	*border = [NSBezierPath bezierPathWithRoundedRect:insetFrame xRadius:_lineRadius yRadius:_lineRadius];
 	
 	[border setLineWidth:_lineWidth];
 	[border setLineDash:_linePattern count:2 phase:0.0];
 
-	// Draw dashed line.
-	[self.lineColor set];
+	// > Draw.
+	[self.dashColor set];
 	[border stroke];
 	
-	// Draw icon.
-	NSImage *img = self.dropImage;
-	NSSize	size = img.size;
-	NSRect	drawRect = NSMakeRect(insetFrame.origin.x + (insetFrame.size.width - size.width) / 2.0, insetFrame.origin.y +(insetFrame.size.height - size.height) / 2.0, size.width, size.width);
 	
-	[img drawInRect:drawRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0f];
+	// Content.
+	NSSize imgSize = NSZeroSize;
+	NSSize strSize = NSZeroSize;
+
+	// > Handle image size.
+	NSImage *img = self.dropImage;
+	
+	if (img)
+		imgSize = img.size;
+	
+	// > Handle text size.
+	NSAttributedString *str = self.dropString;
+	
+	if (str)
+		strSize = str.size;
+	
+	// > Compute size.
+	CGFloat wholeHeight = imgSize.height + strSize.height;
+
+	// > Draw image.
+	if (img)
+	{
+		NSRect drawRect;
+		
+		drawRect.origin.x = insetFrame.origin.x + (insetFrame.size.width - imgSize.width) / 2.0;
+		drawRect.origin.y = insetFrame.origin.y + (insetFrame.size.height - wholeHeight) / 2.0 + strSize.height;
+		drawRect.size = imgSize;
+		
+		[img drawInRect:drawRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0f];
+	}
+	
+	// > Draw string.
+	if (str)
+	{
+		NSPoint drawPoint;
+		
+		drawPoint.x = insetFrame.origin.x + (insetFrame.size.width - strSize.width) / 2.0;
+		drawPoint.y = insetFrame.origin.y + (insetFrame.size.height - wholeHeight) / 2.0;
+
+		[str drawAtPoint:drawPoint];
+	}
 }
 
 

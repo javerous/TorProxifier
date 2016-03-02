@@ -110,24 +110,29 @@ NS_ASSUME_NONNULL_BEGIN
 	// Create drop zone.
 	__weak TPProcessManager *weakPM = _processManager;
 	NSSize					symmetricalSize;
+	NSColor					*dashColor;
 	
 	_dropZone = [[TPDropZone alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)];
 	
+	dashColor = _dropZone.dashColor;
+
 	// > Drop image.
 	NSImage		*template = [NSImage imageNamed:@"app_template"];
-	NSColor		*templateColor = _dropZone.lineColor;
-	NSUInteger	size = 90;
-	
-	_dropZone.dropImage = [NSImage imageWithSize:NSMakeSize(size, size) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+	NSUInteger	iconSize = 90;
+
+	_dropZone.dropImage = [NSImage imageWithSize:NSMakeSize(iconSize, iconSize) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
 		
-		[template drawInRect:NSMakeRect(0, 0, size, size) fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0f];
+		[template drawInRect:NSMakeRect(0, 0, iconSize, iconSize) fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0f];
 		
-		[templateColor set];
+		[dashColor set];
 		
-		NSRectFillUsingOperation(NSMakeRect(0, 0, size, size), NSCompositeSourceAtop);
+		NSRectFillUsingOperation(NSMakeRect(0, 0, iconSize, iconSize), NSCompositeSourceAtop);
 		
 		return YES;
 	}];
+	
+	// > Drop string.
+	_dropZone.dropString = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"drop_app", @"") attributes:@{ NSForegroundColorAttributeName : dashColor, NSFontAttributeName : [NSFont systemFontOfSize:20] }];
 	
 	// > Resize to a good-looking size.
 	symmetricalSize = [_dropZone computeSizeForSymmetricalDashesWithMinWidth:280 minHeight:180];

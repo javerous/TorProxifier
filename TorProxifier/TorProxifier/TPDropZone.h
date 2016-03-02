@@ -34,10 +34,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TPDropZone : NSView
 
 // Properties.
-@property (strong) NSImage *dropImage;
+@property (strong) NSImage				*dropImage;
+@property (strong) NSAttributedString	*dropString;
 
-@property (strong) NSColor *lineColor;
+@property (strong) NSColor *dashColor;
 
+// Handler.
 @property (strong) void (^droppedFilesHandler)(NSArray * _Nonnull files);
 
 // Tools.
