@@ -218,12 +218,12 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	while (1)
 	{
-		pid_t ppid = [[self class] PPIDForPID:pid];
+		pid = [[self class] PPIDForPID:pid];
 		
-		if (ppid < 0)
+		if (pid <= 0)
 			return NO;
 		
-		if (ppid == rpid)
+		if (pid == rpid)
 			return YES;
 	}
 	

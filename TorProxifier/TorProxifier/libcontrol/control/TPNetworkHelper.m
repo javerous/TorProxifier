@@ -118,7 +118,6 @@ NSData *data_with_socket(NSURLRequest *urlRequest)
 			return nil;
 	}
 	
-	
 	// Resolve host.
 	struct addrinfo hints, *res, *res0 = NULL;
 	int s = -1;
