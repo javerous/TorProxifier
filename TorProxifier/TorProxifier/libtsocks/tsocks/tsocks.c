@@ -58,31 +58,11 @@ char *progname = "libtsocks";         	   /* Name used in err msgs    */
 #include "dead_pool.h"
 
 
-
-// --JP/
-#include "TPControlHelper.h"
-
-static void __attribute((constructor)) tp_constructor()
-{
-	fprintf(stderr, "****** tsocks loaded ******\n");
-}
-// --JP!
-
 /* Global Declarations */
-#ifdef USE_SOCKS_DNS
-static int (*realresinit)(void);
-#endif
 #ifdef USE_TOR_DNS
 static dead_pool *pool = NULL;
-//static struct hostent *(*realgethostbyname)(GETHOSTBYNAME_SIGNATURE);
-//int (*realgetaddrinfo)(GETADDRINFO_SIGNATURE);
-//static struct hostent *(*realgetipnodebyname)(GETIPNODEBYNAME_SIGNATURE);
 #endif
-//int (*realconnect)(CONNECT_SIGNATURE);
-//static int (*realselect)(SELECT_SIGNATURE);
-//static int (*realpoll)(POLL_SIGNATURE);
-//int (*realclose)(CLOSE_SIGNATURE);
-//static int (*realgetpeername)(GETPEERNAME_SIGNATURE);
+
 static struct parsedfile *config;
 static struct connreq *requests = NULL;
 static int suid = 0;
@@ -90,7 +70,6 @@ static char *conffile = NULL;
 static char *confdata = NULL;
 
 /* Exported Function Prototypes */
-void _init(void);
 int connect(CONNECT_SIGNATURE);
 int select(SELECT_SIGNATURE);
 int poll(POLL_SIGNATURE);
@@ -106,6 +85,7 @@ struct hostent *getipnodebyname(GETIPNODEBYNAME_SIGNATURE);
 #endif 
 
 /* Private Function Prototypes */
+static void _init(void);
 static int get_config();
 static int get_environment();
 static int connect_server(struct connreq *conn);
@@ -132,11 +112,25 @@ static int deadpool_init();
 static int send_socksv4a_request(struct connreq *conn, const char *onion_host);
 #endif
 
-
 // --JP/
-struct hostent *p_gethostbyname(GETHOSTBYNAME_SIGNATURE);
-int p_getaddrinfo(GETADDRINFO_SIGNATURE);
-struct hostent *p_getipnodebyname(GETIPNODEBYNAME_SIGNATURE);
+#include "TPControlHelper.h"
+
+static void __attribute((constructor)) tp_constructor()
+{
+	fprintf(stderr, "****** tsocks loaded ******\n");
+	
+	_init();
+}
+// --JP!
+
+#ifdef USE_SOCKS_DNS
+int p_res_init(void);
+#endif
+#if defined(USE_TOR_DNS) && USE_TOR_DNS
+struct hostent *	p_gethostbyname(GETHOSTBYNAME_SIGNATURE);
+int					p_getaddrinfo(GETADDRINFO_SIGNATURE);
+struct hostent *	p_getipnodebyname(GETIPNODEBYNAME_SIGNATURE);
+#endif
 
 int p_connect(CONNECT_SIGNATURE);
 
@@ -145,6 +139,7 @@ int p_poll(POLL_SIGNATURE);
 int p_close(CLOSE_SIGNATURE);
 int p_getpeername(GETPEERNAME_SIGNATURE);
 
+
 // From 'OS X Internal'
 typedef struct interpose_s {
 	void *new_func;
@@ -152,23 +147,27 @@ typedef struct interpose_s {
 } interpose_t;
 
 __attribute__((used)) static const interpose_t interposers[] __attribute__((section("__DATA,__interpose"))) = {
-		{ (void *)p_gethostbyname, (void *)gethostbyname },
-		{ (void *)p_getaddrinfo, (void *)getaddrinfo },
-		{ (void *)p_getipnodebyname, (void *)getipnodebyname },
-		
-		{ (void *)p_connect, (void *)connect },
-		{ (void *)p_select, (void *)select },
-		{ (void *)p_poll, (void *)poll },
-		{ (void *)p_close, (void *)close },
-		{ (void *)p_getpeername, (void *)getpeername },
+	
+#if defined(USE_SOCKS_DNS) && USE_SOCKS_DNS
+	{ (void *)p_res_init, (void *)res_init },
+#endif
+	
+#if defined(USE_TOR_DNS) && USE_TOR_DNS
+	{ (void *)p_gethostbyname, (void *)gethostbyname },
+	{ (void *)p_getaddrinfo, (void *)getaddrinfo },
+	{ (void *)p_getipnodebyname, (void *)getipnodebyname },
+#endif
+
+	{ (void *)p_connect, (void *)connect },
+	{ (void *)p_select, (void *)select },
+	{ (void *)p_poll, (void *)poll },
+	{ (void *)p_close, (void *)close },
+	{ (void *)p_getpeername, (void *)getpeername },
 };
 // --JP!
 
 
-void _init(void) {
-#ifdef USE_OLD_DLSYM
-	void *lib;
-#endif
+static void _init(void) {
 
 	/* We could do all our initialization here, but to be honest */
 	/* most programs that are run won't use our services, so     */
@@ -176,40 +175,10 @@ void _init(void) {
 
 	/* Determine the logging level */
 	suid = (getuid() != geteuid());
-
-#ifndef USE_OLD_DLSYM
-	//realconnect = dlsym(RTLD_NEXT, "connect");
-	//realselect = dlsym(RTLD_NEXT, "select");
-	//realpoll = dlsym(RTLD_NEXT, "poll");
-	//realclose = dlsym(RTLD_NEXT, "close");
-	//realgetpeername = dlsym(RTLD_NEXT, "getpeername");
-	#ifdef USE_SOCKS_DNS
-	realresinit = dlsym(RTLD_NEXT, "res_init");
-	#endif
-        #ifdef USE_TOR_DNS
-	//realgethostbyname = dlsym(RTLD_NEXT, "gethostbyname");
-	//realgetaddrinfo = dlsym(RTLD_NEXT, "getaddrinfo");
-	//realgetipnodebyname = dlsym(RTLD_NEXT, "getipnodebyname");
-        #endif
-#else
-	lib = dlopen(LIBCONNECT, RTLD_LAZY);
-	realconnect = dlsym(lib, "connect");
-	realselect = dlsym(lib, "select");
-	realpoll = dlsym(lib, "poll");
-	realgetpeername = dlsym(lib, "getpeername");
-	#ifdef USE_SOCKS_DNS
-	realresinit = dlsym(lib, "res_init");
-	#endif
-	#ifdef USE_TOR_DNS
-	realgethostbyname = dlsym(lib, "gethostbyname");
-	realgetaddrinfo = dlsym(lib, "getaddrinfo");
-	realgetipnodebyname = dlsym(RTLD_NEXT, "getipnodebyname");
-        #endif
-	dlclose(lib);
-	lib = dlopen(LIBC, RTLD_LAZY);
-	realclose = dlsym(lib, "close");
-	dlclose(lib);
-#endif
+	
+	get_environment();
+	get_config();
+	
 #ifdef USE_TOR_DNS
      /* Unfortunately, we can't do this lazily because otherwise our mmap'd
         area won't be shared across fork()s. */
@@ -317,13 +286,6 @@ int p_connect(CONNECT_SIGNATURE) {
    struct connreq *newconn;
 
    get_environment();
-
-	/* If the real connect doesn't exist, we're stuffed */
-	//if (realconnect == NULL) {
-	//	show_msg(MSGERR, "Unresolved symbol: connect\n");
-	//	return(-1);
-	//}
-	
 	
 	char *ipstr;
 	
@@ -812,11 +774,6 @@ int p_close(CLOSE_SIGNATURE) {
    int rc;
    struct connreq *conn;
 
-	//if (realclose == NULL) {
-	//	show_msg(MSGERR, "Unresolved symbol: close\n");
-	//	return(-1);
-	//}
-
    show_msg(MSGDEBUG, "Call to close(%d)\n", fd);
 
    rc = close(fd);
@@ -852,13 +809,7 @@ int p_getpeername(GETPEERNAME_SIGNATURE) {
    struct connreq *conn;
    int rc;
 
-    //if (realgetpeername == NULL) {
-    //    show_msg(MSGERR, "Unresolved symbol: getpeername\n");
-    //    return(-1);
-    //}
-
    show_msg(MSGDEBUG, "Call to getpeername for fd %d\n", __fd);
-
 
    rc = getpeername(__fd, __name, __namelen);
    if (rc == -1)
@@ -1424,16 +1375,11 @@ static int read_socksv4_req(struct connreq *conn) {
 }
 
 #ifdef USE_SOCKS_DNS
-int res_init(void) {
+int p_res_init(void) {
         int rc;
-
-	if (realresinit == NULL) {
-		show_msg(MSGERR, "Unresolved symbol: res_init\n");
-		return(-1);
-	}
         
 	/* Call normal res_init */
-	rc = realresinit();
+	rc = res_init();
 
    /* Force using TCP protocol for DNS queries */
    _res.options |= RES_USEVC;

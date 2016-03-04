@@ -15,19 +15,9 @@ location */
 /* Use _GNU_SOURCE to define RTLD_NEXT, mostly for RH7 systems */
 /* #undef USE_GNU_SOURCE */
 
-/* dlopen() the old libc to get connect() instead of RTLD_NEXT,
-hopefully shouldn't be needed */
-/* #undef USE_OLD_DLSYM */
-
-/* path to library containing connect(), needed if USE_OLD_DLSYM is enabled */
-/* #undef LIBCONNECT */
-
-/* path to libc, needed if USE_OLD_DLSYM is enabled */
-/* #undef LIBC */
-
 /* Configure the system resolver to use TCP queries on startup, this
 allows socksified DNS */
-/* #undef USE_SOCKS_DNS */
+#define USE_SOCKS_DNS 1
 
 /* Prototype and function header for connect function */
 #define CONNECT_SIGNATURE int __fd, const struct sockaddr * __addr, socklen_t __len
