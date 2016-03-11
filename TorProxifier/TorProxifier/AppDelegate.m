@@ -169,13 +169,22 @@ static BOOL is_port_available(uint16_t port);
 		// Start assistant.
 		NSArray *pannels = @[ [TPPanel_Welcome class] ];
 		
-		[SMAssistantController startAssistantWithPanels:pannels completionHandler:^(TPConfiguration *  _Nullable context) {
+		[SMAssistantController startAssistantWithPanels:pannels completionHandler:^(SMAssistantCompletionType type, TPConfiguration *  _Nullable context) {
 			
-			_configuration = context;
-			
-			[_configuration saveToUserDefaults:[NSUserDefaults standardUserDefaults]];
-
-			ctrl(SMOperationsControlContinue);
+			switch (type)
+			{
+				case SMAssistantCompletionTypeCanceled:
+					[[NSApplication sharedApplication] terminate:nil];
+					break;
+					
+				case SMAssistantCompletionTypeDone:
+					_configuration = context;
+					
+					[_configuration saveToUserDefaults:[NSUserDefaults standardUserDefaults]];
+					
+					ctrl(SMOperationsControlContinue);
+					break;
+			}
 		}];
 	}];
 	
@@ -361,7 +370,7 @@ static BOOL is_port_available(uint16_t port);
 				}
 			};
 			
-			[SMTorWindowController startWithTorManager:_torManager infoHandler:^(SMInfo * _Nonnull startInfo) {
+			[SMTorStartController startWithTorManager:_torManager infoHandler:^(SMInfo * _Nonnull startInfo) {
 				
 				TPLogDebug(@"Starting: %@", [startInfo renderComplete]);
 				
@@ -409,7 +418,7 @@ static BOOL is_port_available(uint16_t port);
 					NSString		*oldVersion = context[@"old_version"];
 					NSString		*newVersion = context[@"new_version"];
 					
-					[[SMTorUpdateWindowController sharedController] handleUpdateWithTorManager:_torManager oldVersion:oldVersion newVersion:newVersion infoHandler:^(SMInfo * _Nonnull info) {
+					[SMTorUpdateController handleUpdateWithTorManager:_torManager oldVersion:oldVersion newVersion:newVersion infoHandler:^(SMInfo * _Nonnull info) {
 						TPLogDebug(@"Update: %@", [info renderComplete]);
 					}];
 				}

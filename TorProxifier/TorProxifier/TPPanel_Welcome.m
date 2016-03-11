@@ -35,8 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TPPanel_Welcome
 {
-	__weak id <SMAssistantProxy> _proxy;
-	
 	IBOutlet NSMatrix *matrixView;
 
 	IBOutlet NSTextField *hostTitle;
@@ -48,32 +46,48 @@ NS_ASSUME_NONNULL_BEGIN
 	IBOutlet NSButton *checkTor;
 }
 
+@synthesize panelProxy;
+@synthesize panelPreviousContent;
+
 
 /*
 ** TPPanel_Welcome - SMAssistantPanel
 */
 #pragma mark - TPPanel_Welcome - SMAssistantPanel
 
-+ (id <SMAssistantPanel>)panelWithProxy:(id <SMAssistantProxy>)proxy
+#pragma mark Panel Instance
+
++ (id <SMAssistantPanel>)panelInstance
 {
-	TPPanel_Welcome *panel = [[TPPanel_Welcome alloc] initWithNibName:@"TPPanel_Welcome" bundle:nil];
+	TPPanel_Welcome *ctrl = [[TPPanel_Welcome alloc] initWithNibName:@"TPPanel_Welcome" bundle:nil];
 	
-	panel->_proxy = proxy;
+	NSAssert(ctrl, @"welcome panel controller is nil");
 	
-	return panel;
+	return ctrl;
 }
 
-+ (NSString *)identifiant
+
+#pragma mark Panel properties
+
++ (NSString *)panelIdentifier
 {
 	return @"ac_welcome";
 }
 
-+ (NSString *)title
++ (NSString *)panelTitle
 {
 	return NSLocalizedString(@"ac_title_welcome", @"");
 }
 
-- (nullable id)content
+- (NSView *)panelView
+{
+	return self.view;
+}
+
+
+#pragma mark Panel content
+
+- (nullable id)panelContent
 {
 	TPConfiguration *configuration = [[TPConfiguration alloc] init];
 	
@@ -94,9 +108,12 @@ NS_ASSUME_NONNULL_BEGIN
 	return configuration;
 }
 
-- (void)showPanel
+
+#pragma mark Panel life
+
+- (void)panelDidAppear
 {
-	[_proxy setIsLastPanel:YES];
+	[self.panelProxy setIsLastPanel:YES];
 }
 
 
@@ -147,7 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (tag == 1)
 	{
-		[_proxy setDisableContinue:NO];
+		[self.panelProxy setDisableContinue:NO];
 	}
 	else
 	{
@@ -158,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		if (comps.count != 4)
 		{
-			[_proxy setDisableContinue:YES];
+			[self.panelProxy setDisableContinue:YES];
 			return;
 		}
 		
@@ -168,13 +185,13 @@ NS_ASSUME_NONNULL_BEGIN
 			
 			if ([self validateNumber:comp result:&value] == NO)
 			{
-				[_proxy setDisableContinue:YES];
+				[self.panelProxy setDisableContinue:YES];
 				return;
 			}
 			
 			if (value >= 255)
 			{
-				[_proxy setDisableContinue:YES];
+				[self.panelProxy setDisableContinue:YES];
 				return;
 			}
 		}
@@ -185,19 +202,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 		if ([self validateNumber:portValue result:&value] == NO)
 		{
-			[_proxy setDisableContinue:YES];
+			[self.panelProxy setDisableContinue:YES];
 			return;
 		}
 		
 		if (value == 0 || value > 65535)
 		{
-			[_proxy setDisableContinue:YES];
+			[self.panelProxy setDisableContinue:YES];
 			return;
 		}
 
 		
 		// Everything is ok.
-		[_proxy setDisableContinue:NO];
+		[self.panelProxy setDisableContinue:NO];
 	}
 }
 
@@ -205,8 +222,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	if (!result)
 		return NO;
+	
+	if ([value length] == 0)
+		return NO;
 
-	if ([value rangeOfCharacterFromSet:[NSCharacterSet decimalDigitCharacterSet]].location == NSNotFound)
+	if ([value rangeOfCharacterFromSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]].location != NSNotFound)
 		return NO;
 	
 	*result = [value integerValue];
