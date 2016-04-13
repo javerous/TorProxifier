@@ -21,6 +21,7 @@
  */
 
 @import Cocoa;
+@import Darwin.POSIX.spawn;
 
 #include <sys/sysctl.h>
 
@@ -31,20 +32,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
+** Prototypes
+*/
+#pragma mark - Prototypes
+
+// Apple private
+#define	CS_OPS_STATUS	0			/* return status */
+#define CS_RESTRICT		0x0000800	/* tell dyld to treat restricted */
+
+int csops(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
+
+
+
+/*
 ** TPProcess
 */
-#pragma mark - TPProcess
+#pragma mark - TPProcessglobal
 
 @implementation TPProcess
 {
 	dispatch_queue_t	_localQueue;
 	dispatch_queue_t	_externQueue;
 
-	NSTask *_task;
+	NSNumber			*_pid;
+	dispatch_source_t	_pidWatcher;
 	
 	NSUInteger	_launchStep;
 	NSString	*_launchError;
-	void (^_launchUpdateHandler)(TPProcess * _Nonnull, double);
+	void (^_launchProgressHandler)(TPProcess * _Nonnull, double);
+	void (^_launchErrorHandler)(TPProcess * _Nonnull, NSString * _Nonnull);
+
 }
 
 
@@ -85,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	dispatch_async(_localQueue, ^{
 
-		if (_task)
+		if (_pid)
 			return;
 		
 		// Get final path.
@@ -98,39 +115,89 @@ NS_ASSUME_NONNULL_BEGIN
 		if (!binPath)
 			binPath = _path;
 			
-		// Create task.
+		// Create environment.
 		NSMutableDictionary *environment = [NSMutableDictionary dictionary];
-		
-		_task = [[NSTask alloc] init];
-
-		[_task setLaunchPath:binPath];
+		const char			*envp[] = { NULL, NULL, NULL };
 		
 		if ([libraries count] > 0)
 		{
-			NSString *insertEnv = [libraries componentsJoinedByString:@":"];
-
-			environment[@"DYLD_INSERT_LIBRARIES"] = insertEnv;
-			environment[@"DYLD_FORCE_FLAT_NAMESPACE"] = @"1";
+			envp[0] = [NSString stringWithFormat:@"DYLD_INSERT_LIBRARIES=%@", [libraries componentsJoinedByString:@":"]].UTF8String;
+			envp[1] = "DYLD_FORCE_FLAT_NAMESPACE=1";
 		}
 		
 		TPLogDebug(@"Process environment: '%@'", environment);
 		
-		[_task setEnvironment:environment];
+		// Spawn the process.
+		posix_spawnattr_t	attr;
+		pid_t				pid;
+		const char			*argv[] = { binPath.fileSystemRepresentation, NULL };
+		int					result;
 		
-		_task.terminationHandler = ^(NSTask *task) {
-			
-			TPProcess *strongSelf = weakSelf;
-			
-			if (!strongSelf)
-				return;
-			
-			[strongSelf handleTerminationFromUserAction:NO];
-		};
+		posix_spawnattr_init(&attr);
+		posix_spawnattr_setflags (&attr, POSIX_SPAWN_START_SUSPENDED);
+
+		result = posix_spawn(&pid, binPath.fileSystemRepresentation, NULL, &attr, (char * const *)argv, (char * const *)envp);
 		
-		@try {
-			[_task launch];
-		} @catch (NSException *exception) {
+		posix_spawnattr_destroy (&attr);
+		
+		if (result != 0)
+		{
 			[self handleTerminationFromUserAction:NO];
+			return;
+		}
+
+		// Check if it's a restricted process.
+		uint32_t flags;
+
+		if (csops(pid, CS_OPS_STATUS, &flags, sizeof(flags)) != -1 && (flags & CS_RESTRICT))
+		{
+			// Process is restricted, so we can't inject our lib. There is 3 possibles reason to this restriction:
+			//  - Restricted entitlement
+			//  - setuid
+			//  - Presence of __RESTRICT,__restrict section in the Mach-O.
+			//
+			// For the entitlement, it's possible to ask taskgated to don't enforce CS_RESTRICT by editing "/Library/Preferences/com.apple.security.coderequirements.plist" file, and set AllowUnsafeDynamicLinking to YES.
+			
+			TPLogDebug(@"Process is restricted !");
+			
+			self.launchError = NSLocalizedString(@"process_err_restricted", @"");
+			
+			// We have to resume before kill. That's stupid, but else we lock the process.
+			kill(pid, SIGCONT);
+			kill(pid, SIGKILL);
+
+			[self handleTerminationFromUserAction:NO];
+		}
+		else
+		{
+			// Resume our process.
+			
+			kill(pid, SIGCONT);
+			
+			// Monitor exit.
+			_pidWatcher = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC, pid, DISPATCH_PROC_EXIT, _localQueue);
+			
+			dispatch_source_set_event_handler(_pidWatcher, ^{
+
+				TPProcess *strongSelf = weakSelf;
+				
+				if (!strongSelf)
+					return;
+				
+				// Cancel.
+				dispatch_source_cancel(strongSelf->_pidWatcher);
+				
+				strongSelf->_pidWatcher = nil;
+				strongSelf->_pid = nil;
+				
+				// Notify.
+				[strongSelf handleTerminationFromUserAction:NO];
+			});
+			
+			dispatch_resume(_pidWatcher);
+			
+			// Handle pid.
+			_pid = @(pid);
 		}
 	});
 }
@@ -138,8 +205,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)terminate
 {
 	dispatch_async(_localQueue, ^{
-		if (_task.running)
-			[_task terminate];
+		
+		if (_pid)
+			kill(_pid.intValue, SIGKILL);
 		else
 			[self handleTerminationFromUserAction:YES];
 	});
@@ -156,53 +224,22 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	dispatch_async(_localQueue, ^{
 
+		// Check border.
 		if (_launchStep + 1 > _launchSteps)
 			return;
 		
+		// Increase step.
 		_launchStep++;
+
+		// Notify.
+		void (^launchProgressHandler)(TPProcess *process, double progress) = _launchProgressHandler;
+		double progress = (double)_launchStep / (double)_launchSteps;
 		
-		[self handleLaunchProgress:((double)_launchStep / (double)_launchSteps)];
+		if (launchProgressHandler && progress >= 0 && progress <= 1.0)
+			dispatch_async(_externQueue, ^{ launchProgressHandler(self, progress); });
 	});
 }
 
-- (void)handleLaunchProgress:(double)progress
-{
-	if (progress < 0.0 || progress > 1.0)
-		return;
-	
-	dispatch_async(_externQueue, ^{
-		
-		void (^launchProgressHandler)(TPProcess *process, double progress) = self.launchProgressHandler;
-		
-		if (launchProgressHandler)
-			launchProgressHandler(self, progress);
-	});
-}
-
-- (void)setLaunchProgressHandler:(void (^)(TPProcess * _Nonnull, double))launchProgressHandler
-{
-	dispatch_async(_localQueue, ^{
-		
-		_launchUpdateHandler = launchProgressHandler;
-		
-		if (_launchSteps > 0)
-			[self handleLaunchProgress:((double)_launchStep / (double)_launchSteps)];
-		else
-			[self handleLaunchProgress:0.0];
-	});
-}
-
-- (void (^)(TPProcess * _Nonnull, double))launchProgressHandler
-{
-	__block void (^result)(TPProcess * _Nonnull, double);
-	
-	
-	dispatch_sync(_localQueue, ^{
-		result = _launchUpdateHandler;
-	});
-	
-	return result;
-}
 
 
 /*
@@ -259,10 +296,48 @@ NS_ASSUME_NONNULL_BEGIN
 	__block pid_t pid;
 	
 	dispatch_sync(_localQueue, ^{
-		pid = [_task processIdentifier];
+		if (_pid)
+			pid = [_pid intValue];
+		else
+			pid = -1;
 	});
 	
 	return pid;
+}
+
+
+#pragma mark Launch Progress Handler
+
+- (void)setLaunchProgressHandler:(void (^)(TPProcess * _Nonnull, double))launchProgressHandler
+{
+	dispatch_async(_localQueue, ^{
+		
+		_launchProgressHandler = launchProgressHandler;
+		
+		if (launchProgressHandler)
+		{
+			double progress;
+			
+			if (_launchSteps > 0)
+				progress = (double)_launchStep / (double)_launchSteps;
+			else
+				progress = 0.0;
+			
+			if (progress >= 0.0 && progress <= 1.0)
+				dispatch_async(_externQueue, ^{ launchProgressHandler(self, progress); });
+		}
+	});
+}
+
+- (void (^)(TPProcess * _Nonnull, double))launchProgressHandler
+{
+	__block void (^result)(TPProcess * _Nonnull, double);
+	
+	dispatch_sync(_localQueue, ^{
+		result = _launchProgressHandler;
+	});
+	
+	return result;
 }
 
 
@@ -285,13 +360,45 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	
 	dispatch_async(_localQueue, ^{
+		
+		// Handle error.
 		_launchError = error;
 		
-		void (^launchErrorHandler)(TPProcess *process, NSString *error) = self.launchErrorHandler;
-		
-		if (launchErrorHandler)
-			launchErrorHandler(self, error);
+		// Notify.
+		void (^launchErrorHandler)(TPProcess *process, NSString *error) = _launchErrorHandler;
+
+		if (launchErrorHandler && error)
+			dispatch_async(_externQueue, ^{ launchErrorHandler(self, error); });
 	});
+}
+
+
+#pragma mark Launch Error Handler
+
+- (void)setLaunchErrorHandler:(void (^)(TPProcess * _Nonnull, NSString * _Nonnull))launchErrorHandler
+{
+	dispatch_async(_localQueue, ^{
+		
+		_launchErrorHandler = launchErrorHandler;
+		
+		if (launchErrorHandler && _launchError)
+		{
+			NSString *error = _launchError;
+			
+			dispatch_async(_externQueue, ^{ launchErrorHandler(self, error); });
+		}
+	});
+}
+
+- (void (^)(TPProcess * _Nonnull, NSString * _Nonnull))launchErrorHandler
+{
+	__block void (^result)(TPProcess * _Nonnull, NSString * _Nonnull);
+	
+	dispatch_sync(_localQueue, ^{
+		result = _launchErrorHandler;
+	});
+	
+	return result;
 }
 
 
@@ -303,17 +410,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleTerminationFromUserAction:(BOOL)userAction
 {
-	// Clean task.
-	dispatch_async(_localQueue, ^{
-		_task = nil;
-	});
-
 	// Notify.
 	void (^terminateHandler)(TPProcess *process, BOOL userAction) = self.terminateHandler;
 
 	if (terminateHandler)
 	{
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		dispatch_async(_externQueue, ^{
 			terminateHandler(self, userAction);
 		});
 	}
