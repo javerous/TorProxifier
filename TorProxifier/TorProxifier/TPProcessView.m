@@ -34,6 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - TPProcessView - Private
 
 @interface TPProcessView ()
+{
+	BOOL _isError;
+}
 
 @property (strong) IBOutlet NSImageView *iconView;
 @property (strong) IBOutlet NSTextField *nameField;
@@ -101,6 +104,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
+		if (_isError)
+			return;
+		
 		if (_statusButton.hidden)
 			_statusButton.hidden = NO;
 		
@@ -128,12 +134,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleLaunchError:(NSString *)error
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
-		
+
 		if (_statusButton.hidden)
 			_statusButton.hidden = NO;
 		
 		_statusField.stringValue = error;
 		_statusButton.image = [NSImage imageNamed:@"error"];
+		
+		_isError = YES;
 	});
 }
 
