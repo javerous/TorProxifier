@@ -20,11 +20,10 @@
  *
  */
 
-@import Cocoa;
-@import Darwin.POSIX.spawn;
+#import <Cocoa/Cocoa.h>
 
+#import <spawn.h>
 #import <libproc.h>
-
 #include <sys/sysctl.h>
 
 #import "TPProcess.h"
@@ -118,8 +117,7 @@ int csops(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
 			binPath = _path;
 			
 		// Create environment.
-		NSMutableDictionary *environment = [NSMutableDictionary dictionary];
-		const char			*envp[] = { NULL, NULL, NULL };
+		const char *envp[] = { NULL, NULL, NULL };
 		
 		if ([libraries count] > 0)
 		{
@@ -127,7 +125,7 @@ int csops(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
 			envp[1] = "DYLD_FORCE_FLAT_NAMESPACE=1";
 		}
 		
-		TPLogDebug(@"Process environment: '%@'", environment);
+		TPLogDebug(@"Process environment: '%s'", envp[0]);
 		
 		// Spawn the process.
 		posix_spawnattr_t	attr;

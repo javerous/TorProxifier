@@ -20,11 +20,12 @@
  *
  */
 
-@import SMAssistant;
-@import SMTor;
-@import SMFoundation;
+#import <SMAssistant/SMAssistant.h>
+#import <SMTor/SMTor.h>
+#import <SMFoundation/SMFoundation.h>
 
-@import Darwin.POSIX;
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 #import "AppDelegate.h"
 

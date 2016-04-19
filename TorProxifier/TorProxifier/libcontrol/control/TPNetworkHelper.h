@@ -22,7 +22,7 @@
 
 #pragma once
 
-@import Foundation;
+#import <Foundation/Foundation.h>
 
 
 NSData *data_with_url_connection(NSURLRequest *urlRequest);

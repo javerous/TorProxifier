@@ -20,7 +20,7 @@
  *
  */
 
-@import Foundation;
+#import <Foundation/Foundation.h>
 
 #import <curl/curl.h>
 
