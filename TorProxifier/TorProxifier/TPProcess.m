@@ -23,6 +23,8 @@
 @import Cocoa;
 @import Darwin.POSIX.spawn;
 
+#import <libproc.h>
+
 #include <sys/sysctl.h>
 
 #import "TPProcess.h"
@@ -167,38 +169,37 @@ int csops(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
 			kill(pid, SIGKILL);
 
 			[self handleTerminationFromUserAction:NO];
+			
+			return;
 		}
-		else
-		{
-			// Resume our process.
+		
+		// Resume our process.
+		kill(pid, SIGCONT);
+		
+		// Monitor exit.
+		_pidWatcher = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC, pid, DISPATCH_PROC_EXIT, _localQueue);
+		
+		dispatch_source_set_event_handler(_pidWatcher, ^{
 			
-			kill(pid, SIGCONT);
+			TPProcess *strongSelf = weakSelf;
 			
-			// Monitor exit.
-			_pidWatcher = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC, pid, DISPATCH_PROC_EXIT, _localQueue);
+			if (!strongSelf)
+				return;
 			
-			dispatch_source_set_event_handler(_pidWatcher, ^{
-
-				TPProcess *strongSelf = weakSelf;
-				
-				if (!strongSelf)
-					return;
-				
-				// Cancel.
-				dispatch_source_cancel(strongSelf->_pidWatcher);
-				
-				strongSelf->_pidWatcher = nil;
-				strongSelf->_pid = nil;
-				
-				// Notify.
-				[strongSelf handleTerminationFromUserAction:NO];
-			});
+			// Cancel.
+			dispatch_source_cancel(strongSelf->_pidWatcher);
 			
-			dispatch_resume(_pidWatcher);
+			strongSelf->_pidWatcher = nil;
+			strongSelf->_pid = nil;
 			
-			// Handle pid.
-			_pid = @(pid);
-		}
+			// Notify.
+			[strongSelf handleTerminationFromUserAction:NO];
+		});
+		
+		dispatch_resume(_pidWatcher);
+		
+		// Handle pid.
+		_pid = @(pid);
 	});
 }
 

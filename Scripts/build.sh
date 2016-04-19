@@ -48,7 +48,7 @@ if [ $? -ne 0 ]; then
 	exit 1	
 fi
 
-dmg_path=$(/usr/libexec/PlistBuddy -c 'Print :0' /tmp/torproxifier_output.plist)
+dmg_path=$( /usr/libexec/PlistBuddy -c 'Print :0' /tmp/torproxifier_output.plist )
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't obtain path of temporary DMG."
@@ -65,11 +65,15 @@ if [ $? -ne 0 ]; then
 	exit 1	
 fi
 
-volume_path=$(/usr/libexec/PlistBuddy -c 'Print :system-entities:0:mount-point' /tmp/torproxifier_output.plist)
+volume_path=$( /usr/libexec/PlistBuddy -c 'Print :system-entities:0:mount-point' /tmp/torproxifier_output.plist )
 
 if [ $? -ne 0 ]; then
-	echo "[-] Error: Can't obtain path of attached DMG."
-	exit 1	
+	volume_path=$( /usr/libexec/PlistBuddy -c 'Print :system-entities:1:mount-point' /tmp/torproxifier_output.plist )
+
+	if [ $? -ne 0 ]; then
+		echo "[-] Error: Can't obtain path of attached DMG."
+		exit 1
+	fi
 fi
 
 # Copy sources.
@@ -81,7 +85,7 @@ echo '[+] Copy sources to temporary DMG.'
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't copy sources."
-	/usr/bin/hdiutil detach "${volume_path}" 1>/dev/null 2>/dev/null
+	cd / ; /usr/bin/hdiutil detach "${volume_path}" 1>/dev/null 2>/dev/null
 	exit 1	
 fi
 
@@ -109,7 +113,7 @@ if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't build sources."
 	cat "${volume_path}/build.txt"
 	cat "${volume_path}/build_err.txt"
-	/usr/bin/hdiutil detach "${volume_path}" 2>/dev/null 1>/dev/null
+	cd / ; /usr/bin/hdiutil detach "${volume_path}" 1>/dev/null 2>/dev/null
 	exit 1
 fi
 
@@ -136,7 +140,7 @@ if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't export archive."
 	cat "${volume_path}/build.txt"
 	cat "${volume_path}/build_err.txt"
-	/usr/bin/hdiutil detach "${volume_path}" 2>/dev/null 1>/dev/null
+	cd / ; /usr/bin/hdiutil detach "${volume_path}" 1>/dev/null 2>/dev/null
 	exit 1
 fi
 
@@ -149,7 +153,7 @@ cd "${volume_path}/output/"
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't create TorProxifier tarball."
-	/usr/bin/hdiutil detach "${volume_path}" 2>/dev/null 1>/dev/null
+	cd / ; /usr/bin/hdiutil detach "${volume_path}" 1>/dev/null 2>/dev/null
 	exit 1
 fi
 
@@ -161,27 +165,41 @@ cd "${volume_path}/torproxifier.xcarchive/dSYMs/"
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't create TorProxifier symbols tarball."
-	/usr/bin/hdiutil detach "${volume_path}" 2>/dev/null 1>/dev/null
+	cd / ; /usr/bin/hdiutil detach "${volume_path}" 1>/dev/null 2>/dev/null
 	exit 1
 fi
 
 # Copy result.
 echo '[+] Copy result.'
 
-rm -rf "/Users/${USER}/Desktop/torproxifier-result/"
-mkdir "/Users/${USER}/Desktop/torproxifier-result/"
+if [ -z "$1" ]; then
+	if [ -z ${HOME} ]; then
+		target_path="/tmp/torproxifier-result/"
+	else
+		target_path="${HOME}/Desktop/torproxifier-result/"
+	fi
+else
+	target_path="$1/torproxifier-result/"
+fi
 
-cd "/Users/${USER}/Desktop/torproxifier-result/"
+echo "[#] Use path '${target_path}'."
 
-cp "${volume_path}/output/TorProxifier.tgz" "/Users/${USER}/Desktop/torproxifier-result/"
-cp "${volume_path}/torproxifier.xcarchive/dSYMs/TorProxifier-Symbols.tgz" "/Users/${USER}/Desktop/torproxifier-result/"
+rm -rf "${target_path}"
+mkdir "${target_path}"
 
-open "/Users/${USER}/Desktop/torproxifier-result/"
+cd "${target_path}"
+
+cp "${volume_path}/output/TorProxifier.tgz" "${target_path}"
+cp "${volume_path}/torproxifier.xcarchive/dSYMs/TorProxifier-Symbols.tgz" "${target_path}"
+
+if [ ! -z "$DISPLAY" ]; then
+	open "${target_path}"
+fi
 
 # Clean.
 echo '[+] Clean.'
 
-/usr/bin/hdiutil detach "${volume_path}" 2>/dev/null 1>/dev/null
+cd / ; /usr/bin/hdiutil detach "${volume_path}" 1>/dev/null 2>/dev/null
 
 rm -f "${dmg_path}"
 rm -f "/tmp/torproxifier_output.plist"
