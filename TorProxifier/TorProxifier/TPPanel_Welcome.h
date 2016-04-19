@@ -20,9 +20,9 @@
  *
  */
 
-@import Cocoa;
+#import <Cocoa/Cocoa.h>
 
-@import SMAssistant.SMAssistantPanel;
+#import <SMAssistant/SMAssistantPanel.h>
 
 
 NS_ASSUME_NONNULL_BEGIN

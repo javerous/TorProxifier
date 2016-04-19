@@ -20,8 +20,7 @@
  *
  */
 
-@import Security;
-
+#import <Security/Security.h>
 #import <dispatch/dispatch.h>
 #import <netdb.h>
 

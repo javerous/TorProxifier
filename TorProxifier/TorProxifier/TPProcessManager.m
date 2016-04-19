@@ -20,10 +20,10 @@
  *
  */
 
+#import <Cocoa/Cocoa.h>
+
 #include <servers/bootstrap.h>
 #include <bsm/libbsm.h>
-
-@import Cocoa;
 
 #import "TPProcessManager.h"
 
