@@ -358,14 +358,14 @@ static BOOL is_port_available(uint16_t port);
 			
 			_torManager = [[SMTorManager alloc] initWithConfiguration:tconfiguration];
 			
-			_torManager.logHandler = ^(SMTorManagerLogKind kind, NSString *log) {
+			_torManager.logHandler = ^(SMTorLogKind kind, NSString *log) {
 				switch (kind)
 				{
-					case SMTorManagerLogStandard:
+					case SMTorLogStandard:
 						TPLogDebug(@"Tor: %@", log);
 						break;
 						
-					case SMTorManagerLogError:
+					case SMTorLogError:
 						TPLogDebug(@"Tor-Error: %@", log);
 						break;
 				}
@@ -377,12 +377,12 @@ static BOOL is_port_available(uint16_t port);
 				
 				if (startInfo.kind == SMInfoInfo)
 				{
-					if (startInfo.code == SMTorManagerEventStartDone)
+					if (startInfo.code == SMTorEventStartDone)
 						ctrl(SMOperationsControlContinue);
 				}
 				else if (startInfo.kind == SMInfoWarning)
 				{
-					if (startInfo.code == SMTorManagerWarningStartCanceled)
+					if (startInfo.code == SMTorWarningStartCanceled)
 					{
 						ctrl(SMOperationsControlContinue);
 					}
@@ -413,7 +413,7 @@ static BOOL is_port_available(uint16_t port);
 			[_torManager checkForUpdateWithInfoHandler:^(SMInfo * _Nonnull updateInfo) {
 				
 				// > Handle update.
-				if (updateInfo.kind == SMInfoInfo && [updateInfo.domain isEqualToString:SMTorManagerInfoCheckUpdateDomain] && updateInfo.code == SMTorManagerEventCheckUpdateAvailable)
+				if (updateInfo.kind == SMInfoInfo && [updateInfo.domain isEqualToString:SMTorInfoCheckUpdateDomain] && updateInfo.code == SMTorEventCheckUpdateAvailable)
 				{
 					NSDictionary	*context = updateInfo.context;
 					NSString		*oldVersion = context[@"old_version"];
