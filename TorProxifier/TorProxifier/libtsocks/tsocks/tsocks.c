@@ -212,8 +212,6 @@ static int get_environment() {
    return(0);
 }
 
-#define ALLOW_ENV_CONFIG 1
-
 static int get_config () {
    static int done = 0;
 
@@ -232,7 +230,7 @@ static int get_config () {
    if (!suid)
    {
 	   // --JP/
-	   //confdata = getenv("TSOCKS_CONF_DATA");
+	   confdata = getenv("TSOCKS_CONF_DATA");
 	   
 	   if (confdata)
 		   liner = line_enumerator_buffer(confdata);
@@ -300,7 +298,7 @@ int p_connect(CONNECT_SIGNATURE) {
 	/* Get the type of the socket */
 	getsockopt(__fd, SOL_SOCKET, SO_TYPE, 
 		   (void *) &sock_type, &sock_type_len);
-	show_msg(MSGERR, "****** t1 (%d - sin_family:%d; sock_type:%d)\n", __fd, connaddr->sin_family, sock_type);
+
 	/* If this isn't an INET socket for a TCP stream we can't  */
 	/* handle it, just call the real connect now               */
    if ((connaddr->sin_family != AF_INET) ||
@@ -308,7 +306,6 @@ int p_connect(CONNECT_SIGNATURE) {
       show_msg(MSGDEBUG, "Connection isn't a TCP stream ignoring (%d - sin_family=%d; sock_type=%d)\n", __fd, connaddr->sin_family, sock_type);
 		return(connect(__fd, __addr, __len));
    }
-	show_msg(MSGERR, "****** t2 (%d)\n", __fd);
 
    /* If we haven't initialized yet, do it now */
    get_config();

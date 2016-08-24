@@ -37,6 +37,17 @@
 static NSDictionary * parse_json(NSData *);
 
 
+#if defined(DEBUG) && DEBUG
+
+static void __attribute((constructor)) tp_constructor()
+{
+	fprintf(stderr, "****** tcontrol loaded ******\n");
+}
+
+#endif
+
+
+
 /*
 ** Breakpoint
 */
