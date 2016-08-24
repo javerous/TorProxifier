@@ -17,7 +17,7 @@ location */
 
 /* Configure the system resolver to use TCP queries on startup, this
 allows socksified DNS */
-#define USE_SOCKS_DNS 0
+#define USE_SOCKS_DNS 1
 
 /* Prototype and function header for connect function */
 #define CONNECT_SIGNATURE int __fd, const struct sockaddr * __addr, socklen_t __len
@@ -49,7 +49,7 @@ our version */
 /* #undef DEFINE_STRSEP */
 
 /* Should we resolve DNS entries in a way which works well with tor? */
-#define USE_TOR_DNS 0
+#define USE_TOR_DNS 1
 
 /* Allow the use of DNS names in the socks configuration file for socks
 servers. This doesn't work if socksified DNS is enabled for obvious
