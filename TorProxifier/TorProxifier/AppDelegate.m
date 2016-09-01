@@ -358,7 +358,8 @@ static BOOL is_port_available(uint16_t port);
 			
 			_torManager = [[SMTorManager alloc] initWithConfiguration:tconfiguration];
 			
-			_torManager.logHandler = ^(SMTorLogKind kind, NSString *log) {
+			_torManager.logHandler = ^(SMTorLogKind kind, NSString *log, BOOL fatalLog) {
+				
 				switch (kind)
 				{
 					case SMTorLogStandard:
