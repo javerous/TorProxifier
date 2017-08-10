@@ -106,8 +106,8 @@ void show_msg(int level, char *fmt, ...) {
    char timestring[20];
    time_t timestamp;
 
-   if ((loglevel == MSGNONE) || (level > loglevel))
-      return;
+  // if ((loglevel == MSGNONE) || (level > loglevel))
+    //  return;
 
    if (!logfile) {
       if (logfilename[0]) {
