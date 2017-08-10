@@ -353,7 +353,10 @@ kern_return_t mig_server_get_setting(mach_port_t port, audit_token_t audit, tp_k
 		[tsocksConf appendFormat:@"local = 127.0.0.0/255.0.0.0\n"];
 		[tsocksConf appendFormat:@"server = %@\n", configuration.socksHost];
 		[tsocksConf appendFormat:@"server_port = %u\n", configuration.socksPort];
-		[tsocksConf appendFormat:@"server_type = 4\n"];
+		[tsocksConf appendFormat:@"server_type = 5\n"];
+		[tsocksConf appendFormat:@"default_user = no_user\n"];
+		[tsocksConf appendFormat:@"default_pass = no_pass\n"];
+
 		
 		strlcpy(value, tsocksConf.UTF8String, sizeof(tp_value_t));
 		
@@ -361,7 +364,7 @@ kern_return_t mig_server_get_setting(mach_port_t port, audit_token_t audit, tp_k
 	}
 	else if (strcmp(key, "url-config") == 0)
 	{
-		NSString *urlConf = [NSString stringWithFormat:@"socks4a://%@:%u", configuration.socksHost, configuration.socksPort];
+		NSString *urlConf = [NSString stringWithFormat:@"socks5://%@:%u", configuration.socksHost, configuration.socksPort];
 		
 		strlcpy(value, urlConf.UTF8String, sizeof(tp_value_t));
 		
