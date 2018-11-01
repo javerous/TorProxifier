@@ -117,13 +117,10 @@ int csops(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
 			binPath = _path;
 			
 		// Create environment.
-		const char *envp[] = { NULL, NULL, NULL };
+		const char *envp[] = { NULL, NULL };
 		
-		if ([libraries count] > 0)
-		{
+		if (libraries.count > 0)
 			envp[0] = [NSString stringWithFormat:@"DYLD_INSERT_LIBRARIES=%@", [libraries componentsJoinedByString:@":"]].UTF8String;
-			envp[1] = "DYLD_FORCE_FLAT_NAMESPACE=1";
-		}
 		
 		TPLogDebug(@"Process environment: '%s'", envp[0]);
 		

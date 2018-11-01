@@ -36,7 +36,7 @@ static int handle_tordns_deadpool_range(struct parsedfile *, int, char *);
 static int handle_tordns_cache_size(struct parsedfile *, int, char *);
 static int handle_defuser(struct parsedfile *, int, char *);
 static int handle_defpass(struct parsedfile *, int, char *);
-static int make_netent(char *value, struct netent **ent);
+static int make_netent(char *value, struct toscks_netent **ent);
 
 // --JP/
 line_enumerator line_enumerator_buffer(const char *string)
@@ -338,7 +338,7 @@ static int handle_endpath(struct parsedfile *config, int lineno, int nowords, ch
 
 static int handle_reaches(struct parsedfile *config, int lineno, char *value) {
 	int rc;
-	struct netent *ent;
+	struct toscks_netent *ent;
 
 	rc = make_netent(value, &ent);
 	switch(rc) {
@@ -527,8 +527,7 @@ static int handle_flag(char *value)
     }    
 }
 
-static int handle_tordns_enabled(struct parsedfile *config, int lineno,
-                           char *value)
+static int handle_tordns_enabled(struct parsedfile *config, int lineno, char *value)
 {
     int val = handle_flag(value);
     if(val == -1) {
@@ -540,8 +539,7 @@ static int handle_tordns_enabled(struct parsedfile *config, int lineno,
     return 0;
 }
 
-static int handle_tordns_cache_size(struct parsedfile *config, int lineno,
-                           char *value)
+static int handle_tordns_cache_size(struct parsedfile *config, int lineno, char *value)
 {
     char *endptr;
     long size = strtol(value, &endptr, 10);
@@ -563,11 +561,10 @@ static int handle_tordns_cache_size(struct parsedfile *config, int lineno,
     return 0;
 }
 
-static int handle_tordns_deadpool_range(struct parsedfile *config, int lineno, 
-                           char *value)
+static int handle_tordns_deadpool_range(struct parsedfile *config, int lineno, char *value)
 {
     int rc;
-    struct netent *ent;
+    struct toscks_netent *ent;
 
     if (config->tordns_deadpool_range != NULL) {
         show_msg(MSGERR, "Only one 'deadpool' entry permitted, found a "
@@ -636,7 +633,7 @@ static int handle_tordns_deadpool_range(struct parsedfile *config, int lineno,
 
 static int handle_local(struct parsedfile *config, int lineno, char *value) {
 	int rc;
-	struct netent *ent;
+	struct toscks_netent *ent;
 
 	if (currentcontext != &(config->defaultserver)) {
 		show_msg(MSGERR, "Local networks cannot be specified in path "
@@ -701,7 +698,8 @@ static int handle_local(struct parsedfile *config, int lineno, char *value) {
 
 /* Construct a netent given a string like                             */
 /* "198.126.0.1[:portno[-portno]]/255.255.255.0"                      */
-int make_netent(char *value, struct netent **ent) {
+int make_netent(char *value, struct toscks_netent **ent)
+{
 	char *ip;
 	char *subnet;
    char *startport = NULL;
@@ -733,8 +731,7 @@ int make_netent(char *value, struct netent **ent) {
    }
 
    /* Allocate the new entry */
-   if ((*ent = (struct netent *) malloc(sizeof(struct netent)))
-      == NULL) {
+   if ((*ent = (struct toscks_netent *) malloc(sizeof(struct toscks_netent))) == NULL) {
       /* If we couldn't malloc some storage, leave */
       exit(1);
    }
@@ -793,8 +790,9 @@ int make_netent(char *value, struct netent **ent) {
 	return(0);
 }
 
-int is_local(struct parsedfile *config, struct in_addr *testip) {
-        struct netent *ent;
+int is_local(struct parsedfile *config, struct in_addr *testip)
+{
+	struct toscks_netent *ent;
 
 	for (ent = (config->localnets); ent != NULL; ent = ent -> next) {
 		if ((testip->s_addr & ent->localnet.s_addr) ==
@@ -807,9 +805,9 @@ int is_local(struct parsedfile *config, struct in_addr *testip) {
 }
 
 /* Find the appropriate server to reach an ip */
-int pick_server(struct parsedfile *config, struct serverent **ent, 
-                struct in_addr *ip, unsigned int port) {
-	struct netent *net;	
+int pick_server(struct parsedfile *config, struct serverent **ent, struct in_addr *ip, unsigned int port)
+{
+	struct toscks_netent *net;
    char ipbuf[64];
 
    show_msg(MSGDEBUG, "Picking appropriate server for %s\n", inet_ntoa(*ip));
@@ -851,7 +849,8 @@ int pick_server(struct parsedfile *config, struct serverent **ent,
 /* the start pointer is set to be NULL. The difference between      */
 /* standard strsep and this function is that this one will          */
 /* set *separator to the character separator found if it isn't null */
-char *strsplit(char *separator, char **text, const char *search) {
+char *strsplit(char *separator, char **text, const char *search)
+{
    int len;
    char *ret;
 

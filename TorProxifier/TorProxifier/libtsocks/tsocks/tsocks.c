@@ -48,11 +48,13 @@ char *progname = "libtsocks";         	   /* Name used in err msgs    */
 #include <pwd.h>
 #include <errno.h>
 #include <fcntl.h>
-#include "common.h"
+#include <netdb.h>
 #include <stdarg.h>
 #ifdef USE_SOCKS_DNS
-#include <resolv.h>
+# include <resolv.h>
 #endif
+
+#include "common.h"
 #include "parser.h"
 #include "tsocks.h"
 #include "dead_pool.h"
@@ -69,25 +71,14 @@ static int suid = 0;
 static char *conffile = NULL;
 static char *confdata = NULL;
 
-/* Exported Function Prototypes */
-int connect(CONNECT_SIGNATURE);
-int select(SELECT_SIGNATURE);
-int poll(POLL_SIGNATURE);
-int close(CLOSE_SIGNATURE);
-int getpeername(GETPEERNAME_SIGNATURE);
 #ifdef USE_SOCKS_DNS
 int res_init(void);
 #endif
-#ifdef USE_TOR_DNS
-struct hostent *gethostbyname(GETHOSTBYNAME_SIGNATURE);
-int getaddrinfo(GETADDRINFO_SIGNATURE);
-struct hostent *getipnodebyname(GETIPNODEBYNAME_SIGNATURE);
-#endif 
 
 /* Private Function Prototypes */
 static void _init(void);
-static int get_config();
-static int get_environment();
+static int get_config(void);
+static int get_environment(void);
 static int connect_server(struct connreq *conn);
 static int send_socks_request(struct connreq *conn);
 static struct connreq *new_socks_request(int sockid, struct sockaddr_in *connaddr, 
@@ -108,7 +99,7 @@ static int read_socksv4_req(struct connreq *conn);
 static int read_socksv5_connect(struct connreq *conn);
 static int read_socksv5_auth(struct connreq *conn);
 #ifdef USE_TOR_DNS
-static int deadpool_init();
+static int deadpool_init(void);
 static int send_socksv4a_request(struct connreq *conn, const char *onion_host);
 #endif
 
@@ -127,17 +118,17 @@ static void __attribute((constructor)) tp_constructor()
 int p_res_init(void);
 #endif
 #if defined(USE_TOR_DNS) && USE_TOR_DNS
-struct hostent *	p_gethostbyname(GETHOSTBYNAME_SIGNATURE);
-int					p_getaddrinfo(GETADDRINFO_SIGNATURE);
-struct hostent *	p_getipnodebyname(GETIPNODEBYNAME_SIGNATURE);
+struct hostent *	p_gethostbyname(const char *name);
+int					p_getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *hints, struct addrinfo **res);
+struct hostent *	p_getipnodebyname(const char *name, int af, int flags, int *error_num);
 #endif
 
-int p_connect(CONNECT_SIGNATURE);
+int p_connect(int fd, const struct sockaddr *address, socklen_t address_len);
 
-int p_select(SELECT_SIGNATURE);
-int p_poll(POLL_SIGNATURE);
-int p_close(CLOSE_SIGNATURE);
-int p_getpeername(GETPEERNAME_SIGNATURE);
+int p_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds, struct timeval *timeout);
+int p_poll(struct pollfd fds[], nfds_t nfds, int timeout);
+int p_close(int fd);
+int p_getpeername(int fd, struct sockaddr *address, socklen_t *address_len);
 
 
 // From 'OS X Internal'
@@ -273,7 +264,8 @@ static int get_config () {
    return(0);
 }
 
-int p_connect(CONNECT_SIGNATURE) {
+int p_connect(int fd, const struct sockaddr *address, socklen_t address_len)
+{
 	struct sockaddr_in *connaddr;
 	struct sockaddr_in peer_address;
 	struct sockaddr_in server_address;
@@ -289,29 +281,29 @@ int p_connect(CONNECT_SIGNATURE) {
 	
 	char *ipstr;
 	
-	connaddr = (struct sockaddr_in *) __addr;
+	connaddr = (struct sockaddr_in *) address;
 	ipstr = inet_ntoa(connaddr->sin_addr); // return the IP
 	
   	show_msg(MSGDEBUG, "Got connection request (%s).\n", ipstr);
 
 
 	/* Get the type of the socket */
-	getsockopt(__fd, SOL_SOCKET, SO_TYPE, 
+	getsockopt(fd, SOL_SOCKET, SO_TYPE,
 		   (void *) &sock_type, &sock_type_len);
 
 	/* If this isn't an INET socket for a TCP stream we can't  */
 	/* handle it, just call the real connect now               */
    if ((connaddr->sin_family != AF_INET) ||
        (sock_type != SOCK_STREAM)) {
-      show_msg(MSGDEBUG, "Connection isn't a TCP stream ignoring (%d - sin_family=%d; sock_type=%d)\n", __fd, connaddr->sin_family, sock_type);
-		return(connect(__fd, __addr, __len));
+      show_msg(MSGDEBUG, "Connection isn't a TCP stream ignoring (%d - sin_family=%d; sock_type=%d)\n", fd, connaddr->sin_family, sock_type);
+		return(connect(fd, address, address_len));
    }
 
    /* If we haven't initialized yet, do it now */
    get_config();
 
    /* Are we already handling this connect? */
-   if ((newconn = find_socks_request(__fd, 1))) {
+   if ((newconn = find_socks_request(fd, 1))) {
       if (memcmp(&newconn->connaddr, connaddr, sizeof(*connaddr))) {
          /* Ok, they're calling connect on a socket that is in our
           * queue but this connect() isn't to the same destination, 
@@ -353,14 +345,14 @@ int p_connect(CONNECT_SIGNATURE) {
 
    /* If the socket is already connected, just call connect  */
    /* and get its standard reply                             */
-   if (!getpeername(__fd, (struct sockaddr *) &peer_address, &namelen)) {
+   if (!getpeername(fd, (struct sockaddr *) &peer_address, &namelen)) {
       show_msg(MSGDEBUG, "Socket is already connected, defering to "
                          "real connect\n");
-		return(connect(__fd, __addr, __len));
+		return(connect(fd, address, address_len));
    }
      
    show_msg(MSGDEBUG, "Got connection request for socket %d to "
-                      "%s\n", __fd, inet_ntoa(connaddr->sin_addr));
+                      "%s\n", fd, inet_ntoa(connaddr->sin_addr));
 
    /* If the address is local call realconnect */
 #ifdef USE_TOR_DNS
@@ -369,8 +361,8 @@ int p_connect(CONNECT_SIGNATURE) {
 #else 
    if (!(is_local(config, &(connaddr->sin_addr)))) {
 #endif
-      show_msg(MSGDEBUG, "Connection for socket %d is local\n", __fd);
-      return(connect(__fd, __addr, __len));
+      show_msg(MSGDEBUG, "Connection for socket %d is local\n", fd);
+      return(connect(fd, address, address_len));
    }
 
    /* Ok, so its not local, we need a path to the net */
@@ -412,7 +404,7 @@ int p_connect(CONNECT_SIGNATURE) {
 
    /* If we haven't found a valid server we return connection refused */
    if (!gotvalidserver || 
-       !(newconn = new_socks_request(__fd, connaddr, &server_address, path))) {
+       !(newconn = new_socks_request(fd, connaddr, &server_address, path))) {
       errno = ECONNREFUSED;
       return(-1);
    } else {
@@ -428,7 +420,8 @@ int p_connect(CONNECT_SIGNATURE) {
    }
 }
 
-int p_select(SELECT_SIGNATURE) {
+int p_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds, struct timeval *timeout)
+{
    int nevents = 0;
    int rc = 0;
    int setevents = 0;
@@ -440,14 +433,14 @@ int p_select(SELECT_SIGNATURE) {
     * leave here */
    if (!requests) {
       show_msg(MSGDEBUG, "No requests waiting, calling real select\n");
-      return(select(n, readfds, writefds, exceptfds, timeout));
+      return(select(nfds, readfds, writefds, errorfds, timeout));
    }
 
    get_environment();
 
    show_msg(MSGDEBUG, "Intercepted call to select with %d fds, "
-            "0x%08x 0x%08x 0x%08x, timeout %08x\n", n, 
-            readfds, writefds, exceptfds, timeout);
+            "0x%08x 0x%08x 0x%08x, timeout %08x\n", nfds,
+            readfds, writefds, errorfds, timeout);
 
    for (conn = requests; conn != NULL; conn = conn->next) {
       if ((conn->state == FAILED) || (conn->state == DONE))
@@ -457,7 +450,7 @@ int p_select(SELECT_SIGNATURE) {
                conn->sockid);
       conn->selectevents |= (writefds ? (FD_ISSET(conn->sockid, writefds) ? WRITE : 0) : 0);
       conn->selectevents |= (readfds ? (FD_ISSET(conn->sockid, readfds) ? READ : 0) : 0);
-      conn->selectevents |= (exceptfds ? (FD_ISSET(conn->sockid, exceptfds) ? EXCEPT : 0) : 0);
+      conn->selectevents |= (errorfds ? (FD_ISSET(conn->sockid, errorfds) ? EXCEPT : 0) : 0);
       if (conn->selectevents) {
          show_msg(MSGDEBUG, "Socket %d was set for events\n", conn->sockid);
          monitoring = 1;
@@ -465,7 +458,7 @@ int p_select(SELECT_SIGNATURE) {
    }
 
    if (!monitoring)
-      return(select(n, readfds, writefds, exceptfds, timeout));
+      return(select(nfds, readfds, writefds, errorfds, timeout));
 
    /* This is our select loop. In it we repeatedly call select(). We 
     * pass select the same fdsets as provided by the caller except we
@@ -485,8 +478,8 @@ int p_select(SELECT_SIGNATURE) {
          memcpy(&mywritefds, writefds, sizeof(mywritefds));
       else
          FD_ZERO(&mywritefds);
-      if (exceptfds)
-         memcpy(&myexceptfds, exceptfds, sizeof(myexceptfds));
+      if (errorfds)
+         memcpy(&myexceptfds, errorfds, sizeof(myexceptfds));
       else
          FD_ZERO(&myexceptfds);
 
@@ -511,7 +504,7 @@ int p_select(SELECT_SIGNATURE) {
             FD_CLR(conn->sockid,&myreadfds);
       }
 
-      nevents = select(n, &myreadfds, &mywritefds, &myexceptfds, timeout);
+      nevents = select(nfds, &myreadfds, &mywritefds, &myexceptfds, timeout);
       /* If there were no events we must have timed out or had an error */
       if (nevents <= 0)
          break;
@@ -607,13 +600,14 @@ int p_select(SELECT_SIGNATURE) {
       memcpy(readfds, &myreadfds, sizeof(myreadfds));
    if (writefds)
       memcpy(writefds, &mywritefds, sizeof(mywritefds));
-   if (exceptfds)
-      memcpy(exceptfds, &myexceptfds, sizeof(myexceptfds));
+   if (errorfds)
+      memcpy(errorfds, &myexceptfds, sizeof(myexceptfds));
 
    return(nevents);
 }
 
-int p_poll(POLL_SIGNATURE) {
+int p_poll(struct pollfd fds[], nfds_t nfds, int timeout)
+{
    int nevents = 0;
    int rc = 0, i;
    int setevents = 0;
@@ -623,12 +617,12 @@ int p_poll(POLL_SIGNATURE) {
    /* If we're not currently managing any requests we can just 
     * leave here */
    if (!requests)
-      return(poll(ufds, nfds, timeout));
+      return(poll(fds, nfds, timeout));
 
    get_environment();
 
    show_msg(MSGDEBUG, "Intercepted call to poll with %d fds, "
-            "0x%08x timeout %d\n", nfds, ufds, timeout);
+            "0x%08x timeout %d\n", nfds, fds, timeout);
 
    for (conn = requests; conn != NULL; conn = conn->next)
       conn->selectevents = 0;
@@ -636,16 +630,16 @@ int p_poll(POLL_SIGNATURE) {
    /* Record what events on our sockets the caller was interested
     * in */
    for (i = 0; i < nfds; i++) {
-      if (!(conn = find_socks_request(ufds[i].fd, 0)))
+      if (!(conn = find_socks_request(fds[i].fd, 0)))
          continue;
       show_msg(MSGDEBUG, "Have event checks for socks enabled socket %d\n",
                conn->sockid);
-      conn->selectevents = ufds[i].events;
+      conn->selectevents = fds[i].events;
       monitoring = 1;
    }
 
    if (!monitoring)
-      return(poll(ufds, nfds, timeout));
+      return(poll(fds, nfds, timeout));
 
    /* This is our poll loop. In it we repeatedly call poll(). We 
     * pass select the same event list as provided by the caller except we
@@ -658,25 +652,25 @@ int p_poll(POLL_SIGNATURE) {
    do {
       /* Enable our sockets for the events WE want to hear about */
       for (i = 0; i < nfds; i++) {
-         if (!(conn = find_socks_request(ufds[i].fd, 0)))
+         if (!(conn = find_socks_request(fds[i].fd, 0)))
             continue;
 
          /* We always want to know about socket exceptions but they're 
           * always returned (i.e they don't need to be in the list of 
           * wanted events to be returned by the kernel */
-         ufds[i].events = 0;
+         fds[i].events = 0;
 
          /* If we're waiting for a connect or to be able to send
           * on a socket we want to get write events */
          if ((conn->state == SENDING) || (conn->state == CONNECTING))
-            ufds[i].events |= POLLOUT;
+            fds[i].events |= POLLOUT;
          /* If we're waiting to receive data we want to get 
           * read events */
          if (conn->state == RECEIVING)
-            ufds[i].events |= POLLIN;
+            fds[i].events |= POLLIN;
       }
 
-      nevents = poll(ufds, nfds, timeout);
+      nevents = poll(fds, nfds, timeout);
       /* If there were no events we must have timed out or had an error */
       if (nevents <= 0)
          break;
@@ -689,29 +683,29 @@ int p_poll(POLL_SIGNATURE) {
             continue;
 
          /* Find the socket in the poll list */
-         for (i = 0; ((i < nfds) && (ufds[i].fd != conn->sockid)); i++)
+         for (i = 0; ((i < nfds) && (fds[i].fd != conn->sockid)); i++)
             /* Empty Loop */;
          if (i == nfds) 
             continue;
 
          show_msg(MSGDEBUG, "Checking socket %d for events\n", conn->sockid);
 
-         if (!ufds[i].revents) {
+         if (!fds[i].revents) {
             show_msg(MSGDEBUG, "No events on socket\n");
             continue;
          }
 
          /* Clear any read or write events on the socket, we'll reset
           * any that are necessary later. */
-         setevents = ufds[i].revents;
+         setevents = fds[i].revents;
          if (setevents & POLLIN) {
             show_msg(MSGDEBUG, "Socket had read event\n");
-            ufds[i].revents &= ~POLLIN;
+            fds[i].revents &= ~POLLIN;
             nevents--;
          }
          if (setevents & POLLOUT) {
             show_msg(MSGDEBUG, "Socket had write event\n");
-            ufds[i].revents &= ~POLLOUT;
+            fds[i].revents &= ~POLLOUT;
             nevents--;
          }
          if (setevents & (POLLERR | POLLNVAL | POLLHUP)) 
@@ -761,16 +755,17 @@ int p_poll(POLL_SIGNATURE) {
 
    /* Now restore the events polled in each of the blocks */
    for (i = 0; i < nfds; i++) {
-      if (!(conn = find_socks_request(ufds[i].fd, 1)))
+      if (!(conn = find_socks_request(fds[i].fd, 1)))
          continue;
 
-      ufds[i].events = conn->selectevents;
+      fds[i].events = conn->selectevents;
    }
 
    return(nevents);
 }
 
-int p_close(CLOSE_SIGNATURE) {
+int p_close(int fd)
+{
    int rc;
    struct connreq *conn;
 
@@ -805,18 +800,19 @@ int p_close(CLOSE_SIGNATURE) {
  *
  * PP, Sat, 27 Mar 2004 11:30:23 +0100
  */
-int p_getpeername(GETPEERNAME_SIGNATURE) {
+int p_getpeername(int fd, struct sockaddr *address, socklen_t *address_len)
+{
    struct connreq *conn;
    int rc;
 
-   show_msg(MSGDEBUG, "Call to getpeername for fd %d\n", __fd);
+   show_msg(MSGDEBUG, "Call to getpeername for fd %d\n", fd);
 
-   rc = getpeername(__fd, __name, __namelen);
+   rc = getpeername(fd, address, address_len);
    if (rc == -1)
        return rc;
 
    /* Are we handling this connect? */
-   if ((conn = find_socks_request(__fd, 1))) {
+   if ((conn = find_socks_request(fd, 1))) {
        /* While we are at it, we might was well try to do something useful */
        handle_request(conn);
 
@@ -973,7 +969,7 @@ static int connect_server(struct connreq *conn) {
    show_msg(MSGDEBUG, "Connecting to %s port %d\n", 
             inet_ntoa(conn->serveraddr.sin_addr), ntohs(conn->serveraddr.sin_port));
 
-   rc = connect(conn->sockid, (CONNECT_SOCKARG) &(conn->serveraddr),
+   rc = connect(conn->sockid, (struct sockaddr *) &(conn->serveraddr),
                     sizeof(conn->serveraddr));
 
    show_msg(MSGDEBUG, "Connect returned %d, errno is %d\n", rc, errno); 
@@ -1410,7 +1406,7 @@ static int deadpool_init()
   return 0;
 }
 
-struct hostent *p_gethostbyname(GETHOSTBYNAME_SIGNATURE)
+struct hostent *p_gethostbyname(const char *name)
 {
   if(pool) {
       return our_gethostbyname(pool, name);
@@ -1419,16 +1415,16 @@ struct hostent *p_gethostbyname(GETHOSTBYNAME_SIGNATURE)
   }  
 }
 
-int p_getaddrinfo(GETADDRINFO_SIGNATURE)
+int p_getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *hints, struct addrinfo **res)
 {
   if(pool) {
-      return our_getaddrinfo(pool, node, service, hints, res);
+      return our_getaddrinfo(pool, hostname, servname, hints, res);
   } else {
-      return getaddrinfo(node, service, hints, res);
+      return getaddrinfo(hostname, servname, hints, res);
   }
 }
 
-struct hostent *p_getipnodebyname(GETIPNODEBYNAME_SIGNATURE)
+struct hostent *p_getipnodebyname(const char *name, int af, int flags, int *error_num)
 {
   if(pool) {
       return our_getipnodebyname(pool, name, af, flags, error_num);

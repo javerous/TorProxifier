@@ -13,14 +13,11 @@
 int store_pool_entry(dead_pool *pool, char *hostname, struct in_addr *addr);
 void get_next_dead_address(dead_pool *pool, uint32_t *result);
 
-static int
-do_resolve(const char *hostname, uint32_t sockshost, uint16_t socksport,
-           uint32_t *result_addr);
+static int do_resolve(const char *hostname, uint32_t sockshost, uint16_t socksport, uint32_t *result_addr);
 
 /* Compares the last strlen(s2) characters of s1 with s2.  Returns as for
    strcasecmp. */
-static int 
-strcasecmpend(const char *s1, const char *s2)
+static int strcasecmpend(const char *s1, const char *s2)
 {
    size_t n1 = strlen(s1), n2 = strlen(s2);
    if (n2>n1) /* then they can't be the same; figure out which is bigger */
@@ -29,9 +26,7 @@ strcasecmpend(const char *s1, const char *s2)
        return strncasecmp(s1+(n1-n2), s2, n2);
 }
 
-dead_pool *
-init_pool(int pool_size, struct in_addr deadrange_base, 
-    struct in_addr deadrange_mask, char *sockshost, uint16_t socksport)
+dead_pool * init_pool(int pool_size, struct in_addr deadrange_base, struct in_addr deadrange_mask, char *sockshost, uint16_t socksport)
 {
     int i, deadrange_bits, deadrange_width, deadrange_size;
     struct in_addr socks_server;
@@ -112,8 +107,7 @@ init_pool(int pool_size, struct in_addr deadrange_base,
     return newpool;
 }
 
-int 
-is_dead_address(dead_pool *pool, uint32_t addr) 
+int is_dead_address(dead_pool *pool, uint32_t addr)
 {
     uint32_t haddr = ntohl(addr);
     if(pool == NULL) {
@@ -122,8 +116,7 @@ is_dead_address(dead_pool *pool, uint32_t addr)
     return (pool->deadrange_base == (haddr & pool->deadrange_mask));
 }
 
-void
-get_next_dead_address(dead_pool *pool, uint32_t *result)
+void get_next_dead_address(dead_pool *pool, uint32_t *result)
 {
     *result = htonl(pool->deadrange_base + pool->dead_pos++);
     if(pool->dead_pos >= pool->deadrange_size) {
@@ -131,8 +124,7 @@ get_next_dead_address(dead_pool *pool, uint32_t *result)
     }
 }
 
-int 
-store_pool_entry(dead_pool *pool, char *hostname, struct in_addr *addr)
+int store_pool_entry(dead_pool *pool, char *hostname, struct in_addr *addr)
 {
   int position = pool->write_pos;
   int oldpos;
@@ -180,8 +172,7 @@ store_pool_entry(dead_pool *pool, char *hostname, struct in_addr *addr)
   return position;
 }
 
-int 
-search_pool_for_name(dead_pool *pool, const char *name) 
+int search_pool_for_name(dead_pool *pool, const char *name)
 {
   int i;
   for(i=0; i < pool->n_entries; i++){
@@ -192,8 +183,7 @@ search_pool_for_name(dead_pool *pool, const char *name)
   return -1;
 }
 
-char *
-get_pool_entry(dead_pool *pool, struct in_addr *addr)
+char * get_pool_entry(dead_pool *pool, struct in_addr *addr)
 {
   int i;
   uint32_t intaddr = addr->s_addr;
@@ -214,10 +204,7 @@ get_pool_entry(dead_pool *pool, struct in_addr *addr)
   return NULL;
 }
 
-static int
-build_socks4a_resolve_request(char **out,
-                              const char *username,
-                              const char *hostname)
+static int build_socks4a_resolve_request(char **out, const char *username, const char *hostname)
 {
   size_t len;
   uint16_t port = htons(0);  /* port: 0. */
@@ -238,9 +225,7 @@ build_socks4a_resolve_request(char **out,
 
 #define RESPONSE_LEN 8
 
-static int
-parse_socks4a_resolve_response(const char *response, size_t len,
-                               uint32_t *addr_out)
+static int parse_socks4a_resolve_response(const char *response, size_t len, uint32_t *addr_out)
 {
   uint8_t status;
   uint16_t port;
@@ -270,9 +255,7 @@ parse_socks4a_resolve_response(const char *response, size_t len,
   return 0;
 }
 
-static int
-do_resolve(const char *hostname, uint32_t sockshost, uint16_t socksport,
-           uint32_t *result_addr)
+static int do_resolve(const char *hostname, uint32_t sockshost, uint16_t socksport, uint32_t *result_addr)
 {
   int s;
   struct sockaddr_in socksaddr;
@@ -341,8 +324,7 @@ do_resolve(const char *hostname, uint32_t sockshost, uint16_t socksport,
   return 0;
 }
 
-struct hostent *
-our_gethostbyname(dead_pool *pool, const char *name)
+struct hostent * our_gethostbyname(dead_pool *pool, const char *name)
 {
   int pos;
   static struct in_addr addr;
@@ -372,8 +354,7 @@ our_gethostbyname(dead_pool *pool, const char *name)
   return &he;
 }
 
-static struct hostent *
-alloc_hostent(int af)
+static struct hostent * alloc_hostent(int af)
 {
     struct hostent *he = NULL;
     char **addr_list = NULL;
@@ -423,8 +404,7 @@ alloc_hostent(int af)
 /* On Linux, there's no freehostent() anymore; we might as well implement
    this ourselves. */
 
-static void
-free_hostent(struct hostent *he)
+static void free_hostent(struct hostent *he)
 {
     int i;
     if(he->h_name) {
@@ -442,21 +422,27 @@ free_hostent(struct hostent *he)
     free(he);
 }
 
-int
-our_getaddrinfo(dead_pool *pool, const char *node, const char *service, 
-                void *hints, void *res)
+int our_getaddrinfo(dead_pool *pool, const char *node, const char *service, const struct addrinfo *hints, struct addrinfo **res)
 {
+	show_msg(MSGDEBUG, "our_getaddrinfo: ('%s' '%s') requested\n", node, service);
+
     int pos;
     struct in_addr addr;
     char *ipstr;
     int ret;
 
-    /* If "node" looks like a dotted-decimal ip address, then just call 
-       the real getaddrinfo; otherwise we'll need to get an address from 
+	if (node == NULL)
+		return getaddrinfo(NULL, service, hints, res);
+
+	if (hints->ai_flags & AI_NUMERICHOST)
+		return getaddrinfo(node, service, hints, res);
+
+	/* If "node" looks like a dotted-decimal ip address, then just call
+       the real getaddrinfo; otherwise we'll need to get an address from
        our pool. */
-
+	
     /* TODO: work out what to do with AF_INET6 requests */
-
+	
 #ifdef HAVE_INET_ATON
     if(inet_aton(node, &addr) == 0) {
 #elif defined(HAVE_INET_ADDR)
@@ -482,10 +468,10 @@ our_getaddrinfo(dead_pool *pool, const char *node, const char *service,
     return ret;
 }
 
-struct hostent *
-our_getipnodebyname(dead_pool *pool, const char *name, int af, int flags, 
-                    int *error_num)
+struct hostent * our_getipnodebyname(dead_pool *pool, const char *name, int af, int flags, int *error_num)
 {
+	show_msg(MSGDEBUG, "our_getipnodebyname: '%s' requested\n", name);
+
     int pos;
     struct hostent *he = NULL;
     int want_4in6 = 0;

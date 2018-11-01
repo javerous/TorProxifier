@@ -22,9 +22,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import <curl/curl.h>
-
-
 
 /*
 ** SimpleHTTPProtocol
@@ -34,19 +31,7 @@
 @interface SimpleHTTPProtocol : NSURLProtocol
 {
 @private
-	dispatch_queue_t	_localQueue;
-	
-	CURL				*_curl;
-	struct curl_slist	*_chunk;
-	
-	BOOL				_canceled;
-	
-	BOOL				_firstHeaderHandled;
-	
-	NSString			*_httpVersion;
-	NSUInteger			_httpCode;
-	NSMutableDictionary *_headers;
-	BOOL				_headerHandled;
+	NSURLSession *_session;
 }
 
 // -- Registration --
