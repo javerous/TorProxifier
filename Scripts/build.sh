@@ -160,7 +160,8 @@ fi
 # Create TorProxifier Symbols tarball.
 echo '[+] Create TorProxifier symbols tarball.'
 
-cd "${volume_path}/torproxifier.xcarchive/dSYMs/"
+cp -R "${volume_path}/torproxifier.xcarchive/dSYMs/TorProxifier.app.dSYM" "${volume_path}/output/"
+cd "${volume_path}/output/"
 /usr/bin/tar czf "TorProxifier-Symbols.tgz" "TorProxifier.app.dSYM"
 
 if [ $? -ne 0 ]; then
@@ -190,7 +191,8 @@ mkdir "${target_path}"
 cd "${target_path}"
 
 cp "${volume_path}/output/TorProxifier.tgz" "${target_path}"
-cp "${volume_path}/torproxifier.xcarchive/dSYMs/TorProxifier-Symbols.tgz" "${target_path}"
+cp "${volume_path}/output/TorProxifier-Symbols.tgz" "${target_path}"
+cp -R "${volume_path}/torproxifier.xcarchive" "${target_path}"
 
 if [ ! -z "$DISPLAY" ]; then
 	open "${target_path}"
