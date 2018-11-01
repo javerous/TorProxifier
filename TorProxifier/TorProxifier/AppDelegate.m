@@ -136,7 +136,7 @@ static BOOL is_port_available(uint16_t port);
 	// Reset settings if wanted.
 	NSUInteger flags = [NSEvent modifierFlags];
 	
-	if ((flags & NSAlternateKeyMask) && (flags & NSCommandKeyMask))
+	if ((flags & NSEventModifierFlagOption) && (flags & NSEventModifierFlagCommand))
 	{
 		NSString *identifier = [[NSBundle mainBundle] bundleIdentifier];
 		

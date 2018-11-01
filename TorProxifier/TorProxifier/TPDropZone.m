@@ -178,7 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
 		drawRect.origin.y = insetFrame.origin.y + (insetFrame.size.height - wholeHeight) / 2.0 + strSize.height;
 		drawRect.size = imgSize;
 		
-		[img drawInRect:drawRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0f];
+		[img drawInRect:drawRect fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0f];
 	}
 	
 	// > Draw string.

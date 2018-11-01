@@ -122,11 +122,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 	_dropZone.dropImage = [NSImage imageWithSize:NSMakeSize(iconSize, iconSize) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
 		
-		[template drawInRect:NSMakeRect(0, 0, iconSize, iconSize) fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0f];
+		[template drawInRect:NSMakeRect(0, 0, iconSize, iconSize) fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0f];
 		
 		[dashColor set];
 		
-		NSRectFillUsingOperation(NSMakeRect(0, 0, iconSize, iconSize), NSCompositeSourceAtop);
+		NSRectFillUsingOperation(NSMakeRect(0, 0, iconSize, iconSize), NSCompositingOperationSourceAtop);
 		
 		return YES;
 	}];

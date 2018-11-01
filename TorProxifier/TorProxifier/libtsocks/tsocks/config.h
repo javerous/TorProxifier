@@ -20,23 +20,23 @@ allows socksified DNS */
 #define USE_SOCKS_DNS 1
 
 /* Prototype and function header for connect function */
-#define CONNECT_SIGNATURE int __fd, const struct sockaddr * __addr, socklen_t __len
+//#define CONNECT_SIGNATURE int __fd, const struct sockaddr * __addr, socklen_t __len
 
 /* The type of socket structure pointer to use to call the
  * real connect */
-#define CONNECT_SOCKARG struct sockaddr *
+//#define CONNECT_SOCKARG struct sockaddr *
 
 /* Prototype and function header for select function */
-#define SELECT_SIGNATURE int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout
+//#define SELECT_SIGNATURE int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout
 
 /* Prototype and function header for poll function */
-#define POLL_SIGNATURE struct pollfd ufds[], nfds_t nfds, int timeout
+//#define POLL_SIGNATURE struct pollfd ufds[], nfds_t nfds, int timeout
 
 /* Prototype and function header for close function */
-#define CLOSE_SIGNATURE int fd
+//#define CLOSE_SIGNATURE int fd
 
 /* Prototype and function header for getpeername function */
-#define GETPEERNAME_SIGNATURE int __fd, struct sockaddr * __name, socklen_t *__namelen
+//#define GETPEERNAME_SIGNATURE int __fd, struct sockaddr * __name, socklen_t *__namelen
 
 /* Work out which function we have for conversion from string IPs to
 numerical ones */

@@ -82,10 +82,7 @@ void remove_dyld_insert(void)
 		if (new_dyld_insert.length > 0)
 			setenv("DYLD_INSERT_LIBRARIES", new_dyld_insert.UTF8String, 1);
 		else
-		{
 			unsetenv("DYLD_INSERT_LIBRARIES");
-			unsetenv("DYLD_FORCE_FLAT_NAMESPACE");
-		}
 	}
 }
 
@@ -133,15 +130,6 @@ void restore_dyld_insert_buffer(char * const *envp, char ***out_envp)
 		{
 			envs[@"DYLD_INSERT_LIBRARIES"] = new_dyld_insert;
 			[envs_keys addObject:@"DYLD_INSERT_LIBRARIES"];
-		}
-		
-		// Fix "DYLD_FORCE_FLAT_NAMESPACE"
-		if (envs[@"DYLD_FORCE_FLAT_NAMESPACE"])
-			envs[@"DYLD_FORCE_FLAT_NAMESPACE"] = @"1";
-		else
-		{
-			envs[@"DYLD_FORCE_FLAT_NAMESPACE"] = @"1";
-			[envs_keys addObject:@"DYLD_FORCE_FLAT_NAMESPACE"];
 		}
 		
 		// Build output.

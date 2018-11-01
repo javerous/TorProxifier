@@ -364,7 +364,7 @@ kern_return_t mig_server_get_setting(mach_port_t port, audit_token_t audit, tp_k
 	}
 	else if (strcmp(key, "url-config") == 0)
 	{
-		NSString *urlConf = [NSString stringWithFormat:@"socks5://%@:%u", configuration.socksHost, configuration.socksPort];
+		NSString *urlConf = [NSString stringWithFormat:@"%@:%u", configuration.socksHost, configuration.socksPort];
 		
 		strlcpy(value, urlConf.UTF8String, sizeof(tp_value_t));
 		

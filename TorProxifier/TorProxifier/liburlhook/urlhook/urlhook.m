@@ -51,28 +51,13 @@ static NSArray * (*original_NSURLSessionConfiguration_defaultProtocolClasses)(Cl
 
 NSArray *replaced_NSURLSessionConfiguration_defaultProtocolClasses(Class self, SEL _cmd)
 {
-	NSArray *classes = original_NSURLSessionConfiguration_defaultProtocolClasses(self, _cmd);
+	NSMutableArray *classes = [original_NSURLSessionConfiguration_defaultProtocolClasses(self, _cmd) mutableCopy];
 	
-	if (classes)
-	{
-		NSMutableArray	*hooked = [classes mutableCopy];
-		NSUInteger		i, count = [hooked count];
-		NSURLRequest	*fakeRequestHTTP = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://fakre_request.org"]];
-		NSURLRequest	*fakeRequestHTTPS = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://fakre_request.org"]];
-
-		for (i = 0; i < count; i++)
-		{
-			id item = hooked[i];
-			
-			if ([[item class] respondsToSelector:@selector(canInitWithRequest:)] == NO)
-				continue;
-			
-			if ([[item class] canInitWithRequest:fakeRequestHTTP] || [[item class] canInitWithRequest:fakeRequestHTTPS])
-				hooked[i] = [SimpleHTTPProtocol class];
-		}
-		
-		classes = [hooked copy];
-	}
+	if (!classes)
+		classes = [[NSMutableArray alloc] init];
+	
+	// Insert ourself in front.
+	[classes insertObject:[SimpleHTTPProtocol class] atIndex:0];
 	
 	TPLogDebug(@"Default protocols: %@", classes);
 	
@@ -99,7 +84,7 @@ NSArray *replaced_NSURLSessionConfiguration_defaultProtocolClasses(Class self, S
 	// Redirect NSURL* HTTP requests.
 	[SimpleHTTPProtocol registerClass];
 	
-	// Hook [NSURLSessionConfiguration _defaultProtocolClasse] to replace APple HTTP protocol by hour protocol. An alternative solution would be to hook connectionProxyDictionary of __NSCFURLSessionConfiguration.
+	// Hook [NSURLSessionConfiguration _defaultProtocolClasse] to replace Apple HTTP protocol by hour protocol. An alternative solution would be to hook connectionProxyDictionary of __NSCFURLSessionConfiguration.
 	Method NSURLSessionConfiguration_connectionProxyDictionary = class_getClassMethod([NSURLSessionConfiguration class], @selector(_defaultProtocolClasses));
 	
 	original_NSURLSessionConfiguration_defaultProtocolClasses = (void *)method_setImplementation(NSURLSessionConfiguration_connectionProxyDictionary, (IMP)replaced_NSURLSessionConfiguration_defaultProtocolClasses);
